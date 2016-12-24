@@ -27,7 +27,6 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
 import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
 import net.minecraftforge.event.world.WorldEvent;
@@ -88,12 +87,8 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void textureHook(TextureStitchEvent.Pre event) throws IOException {
-		if (event.map.getTextureType() == 1) {
-			LogisticsPipes.textures.registerItemIcons(event.map);
-		}
-		if (event.map.getTextureType() == 0) {
-			LogisticsPipes.textures.registerBlockIcons(event.map);
-		}
+		LogisticsPipes.textures.registerItemIcons(event.getMap());
+		LogisticsPipes.textures.registerBlockIcons(event.getMap());
 	}
 
 	@SubscribeEvent

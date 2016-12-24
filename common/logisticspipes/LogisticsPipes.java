@@ -122,8 +122,6 @@ import logisticspipes.proxy.enderio.EnderIOProgressProvider;
 import logisticspipes.proxy.forestry.ForestryProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
-import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
-import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.ImmibisCraftingTableMk2;
 import logisticspipes.proxy.recipeproviders.LogisticsCraftingTable;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
@@ -132,7 +130,6 @@ import logisticspipes.proxy.specialconnection.EnderIOHyperCubeConnection;
 import logisticspipes.proxy.specialconnection.EnderIOTransceiverConnection;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
-import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialconnection.TesseractConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
@@ -397,13 +394,13 @@ public class LogisticsPipes {
 		SimpleServiceLocator.buildCraftProxy.initProxy();
 		SimpleServiceLocator.thermalDynamicsProxy.registerPipeInformationProvider();
 
-		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
+		// SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOHyperCubeConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOTransceiverConnection());
 
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
+//		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
+//		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
 		if (SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass() != null) {
 			SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyTable", SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass()));
 		}
@@ -433,17 +430,9 @@ public class LogisticsPipes {
 
 		boolean isClient = side == Side.CLIENT;
 
-		Object renderer = null;
-		if (isClient) {
-			renderer = new FluidContainerRenderer();
-		}
-
 		LogisticsPipes.LogisticsItemCard = new LogisticsItemCard();
 		LogisticsPipes.LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
 		GameRegistry.registerItem(LogisticsPipes.LogisticsItemCard, LogisticsPipes.LogisticsItemCard.getUnlocalizedName());
-		if (isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsPipes.LogisticsItemCard, (FluidContainerRenderer) renderer);
-		}
 
 		LogisticsPipes.LogisticsRemoteOrderer = new RemoteOrderer();
 		LogisticsPipes.LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
@@ -454,13 +443,7 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsCraftingSignCreator.setUnlocalizedName("ItemPipeSignCreator");
 		GameRegistry.registerItem(LogisticsPipes.LogisticsCraftingSignCreator, LogisticsPipes.LogisticsCraftingSignCreator.getUnlocalizedName());
 
-		int renderIndex;
-		if (isClient) {
-			renderIndex = RenderingRegistry.addNewArmourRendererPrefix("LogisticsHUD");
-		} else {
-			renderIndex = 0;
-		}
-		LogisticsPipes.LogisticsHUDArmor = new ItemHUDArmor(renderIndex);
+		LogisticsPipes.LogisticsHUDArmor = new ItemHUDArmor(-1);
 		LogisticsPipes.LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
 		GameRegistry.registerItem(LogisticsPipes.LogisticsHUDArmor, LogisticsPipes.LogisticsHUDArmor.getUnlocalizedName());
 
@@ -486,9 +469,6 @@ public class LogisticsPipes {
 
 		LogisticsPipes.LogisticsFluidContainer = new LogisticsFluidContainer();
 		LogisticsPipes.LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
-		if (isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsPipes.LogisticsFluidContainer, (FluidContainerRenderer) renderer);
-		}
 		GameRegistry.registerItem(LogisticsPipes.LogisticsFluidContainer, LogisticsPipes.LogisticsFluidContainer.getUnlocalizedName());
 
 		LogisticsPipes.LogisticsBrokenItem = new LogisticsBrokenItem();
@@ -602,8 +582,8 @@ public class LogisticsPipes {
 	public void certificateWarning(FMLFingerprintViolationEvent warning) {
 		if (!LPConstants.DEBUG) {
 			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");
-			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.expectedFingerprint);
-			System.out.println("[LogisticsPipes|Certificate] File: " + warning.source.getAbsolutePath());
+			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.getExpectedFingerprint());
+			System.out.println("[LogisticsPipes|Certificate] File: " + warning.getSource().getAbsolutePath());
 			System.out.println("[LogisticsPipes|Certificate] This in not a LogisticsPipes version from RS485.");
 			certificateError = true;
 		}
@@ -667,15 +647,15 @@ public class LogisticsPipes {
 		res.setUnlocalizedName(clas.getSimpleName());
 		final CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
 		if (pipe instanceof CoreRoutedPipe) {
-			postInitRun.add(() -> res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(EnumFacing.UNKNOWN).normal, ((CoreRoutedPipe) pipe).getTextureType(EnumFacing.UNKNOWN).newTexture));
+			postInitRun.add(() -> res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(null).normal, ((CoreRoutedPipe) pipe).getTextureType(null).newTexture));
 		}
 
 		if (side.isClient()) {
-			if (pipe instanceof PipeBlockRequestTable) {
+			/* if (pipe instanceof PipeBlockRequestTable) {
 				MinecraftForgeClient.registerItemRenderer(res, new LogisticsPipeItemRenderer(true));
 			} else {
 				MinecraftForgeClient.registerItemRenderer(res, MainProxy.proxy.getPipeItemRenderer());
-			}
+			} */
 		}
 		if (clas != PipeItemsBasicLogistics.class && CoreRoutedPipe.class.isAssignableFrom(clas)) {
 			if (clas != PipeFluidBasic.class && PipeFluidBasic.class.isAssignableFrom(clas)) {

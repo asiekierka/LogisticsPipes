@@ -161,6 +161,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
     testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
+
+    compile fileTree(dir: "libs", includes: ['*.jar', '*.zip'])
 }
 
 task deobfJar(type: Jar, dependsOn: 'jar') {

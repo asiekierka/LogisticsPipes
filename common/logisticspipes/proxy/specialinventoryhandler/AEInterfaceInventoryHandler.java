@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import appeng.api.storage.IStorageMonitorableAccessor;
+import appeng.api.util.AEPartLocation;
+import logisticspipes.proxy.ae.AEUtils;
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.item.ItemStack;
@@ -18,7 +21,6 @@ import net.minecraft.util.EnumFacing;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
-import appeng.api.implementations.tiles.ITileStorageMonitorable;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
@@ -34,7 +36,7 @@ import appeng.api.util.AECableType;
 
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
-	private final ITileStorageMonitorable tile;
+	private final IStorageMonitorableAccessor storageAccess;
 	private final boolean hideOnePerStack;
 	private final MachineSource source;
 	private final EnumFacing dir;
@@ -42,20 +44,22 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	LinkedList<Entry<ItemIdentifier, Integer>> cached;
 
 	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		if (dir.equals(EnumFacing.UNKNOWN)) {
+		if (dir == null) {
 			throw new IllegalArgumentException("The direction must not be unknown");
 		}
-		this.tile = (ITileStorageMonitorable) tile;
+
 		this.hideOnePerStack = hideOnePerStack || hideOne;
-		source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
+		source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir))));
 		this.dir = dir;
+
+		this.storageAccess = AEUtils.getStorageMonitorableAccessor(tile, dir);
 	}
 
 	public AEInterfaceInventoryHandler() {
-		tile = null;
+		storageAccess = null;
 		hideOnePerStack = false;
 		source = null;
-		dir = EnumFacing.UNKNOWN;
+		dir = null;
 	}
 
 	@Override
@@ -66,7 +70,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean isType(TileEntity tile) {
-		return tile instanceof ITileStorageMonitorable && tile instanceof IGridHost;
+		return AEUtils.hasStorageMonitorableAccessor(tile, dir) && tile instanceof IGridHost;
 	}
 
 	@Override
@@ -86,7 +90,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		} else {
 			result = new HashMap<>();
 		}
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		IStorageMonitorable tmp = storageAccess.getInventory(source);
 		if (tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) {
 			return result;
 		}
@@ -105,7 +109,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<>();
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		IStorageMonitorable tmp = storageAccess.getInventory(source);
 		if (tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) {
 			return result;
 		}
@@ -118,7 +122,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		IStorageMonitorable tmp = storageAccess.getInventory(source);
 		if (tmp == null || tmp.getItemInventory() == null) {
 			return null;
 		}
@@ -132,7 +136,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		IStorageMonitorable tmp = storageAccess.getInventory(source);
 		if (tmp == null || tmp.getItemInventory() == null) {
 			return null;
 		}
@@ -146,7 +150,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		IStorageMonitorable tmp = storageAccess.getInventory(source);
 		if (tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) {
 			return false;
 		}
@@ -166,7 +170,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier item, int count) {
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		IStorageMonitorable tmp = storageAccess.getInventory(source);
 		if (tmp == null || tmp.getItemInventory() == null) {
 			return 0;
 		}
@@ -185,7 +189,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		ItemStack st = stack.copy();
 		IAEItemStack tst = AEApi.instance().storage().createItemStack(stack);
 
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
+		IStorageMonitorable tmp = storageAccess.getInventory(source);
 		if (tmp == null || tmp.getItemInventory() == null) {
 			return st;
 		}
@@ -247,17 +251,17 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		}
 
 		@Override
+		public IGridNode getGridNode(AEPartLocation aePartLocation) {
+			return null;
+		}
+
+		@Override
+		public AECableType getCableConnectionType(AEPartLocation aePartLocation) {
+			return null;
+		}
+
+		@Override
 		public void securityBreak() {}
-
-		@Override
-		public IGridNode getGridNode(EnumFacing paramEnumFacing) {
-			return null;
-		}
-
-		@Override
-		public AECableType getCableConnectionType(EnumFacing paramEnumFacing) {
-			return null;
-		}
 
 		@Override
 		public IGridNode getActionableNode() {

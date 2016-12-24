@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import appeng.api.storage.IStorageMonitorableAccessor;
+import appeng.api.util.AEPartLocation;
 import logisticspipes.interfaces.ISpecialTankAccessHandler;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.ae.AEUtils;
 import logisticspipes.utils.FluidIdentifier;
 
 import net.minecraft.tileentity.TileEntity;
@@ -17,7 +20,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
-import appeng.api.implementations.tiles.ITileStorageMonitorable;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridHost;
@@ -39,7 +41,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 
 	@Override
 	public boolean isType(TileEntity tile) {
-		return tile instanceof ITileStorageMonitorable && tile instanceof IGridHost;
+		return AEUtils.hasStorageMonitorableAccessor(tile, null) && tile instanceof IGridHost;
 	}
 
 	@Override
@@ -47,7 +49,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 		List<TileEntity> tiles = new ArrayList<>(1);
 		if (tile instanceof IGridHost) {
 			IGridHost host = (IGridHost) tile;
-			IGridNode node = host.getGridNode(EnumFacing.UNKNOWN);
+			IGridNode node = host.getGridNode(AEPartLocation.INTERNAL);
 			if (node != null) {
 				TileEntity base = getBaseTileEntity(node);
 				if (base != null) {
@@ -64,25 +66,23 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 	@Override
 	public Map<FluidIdentifier, Long> getAvailableLiquid(TileEntity tile) {
 		Map<FluidIdentifier, Long> map = new HashMap<>();
-		if (tile instanceof ITileStorageMonitorable) {
-			ITileStorageMonitorable mon = (ITileStorageMonitorable) tile;
-			if (mon == null) {
-				return map;
+		IStorageMonitorableAccessor mon = AEUtils.getStorageMonitorableAccessor(tile, null);
+		if (mon == null) {
+			return map;
+		}
+		for (EnumFacing dir : EnumFacing.VALUES) {
+			MachineSource source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir))));
+			IStorageMonitorable monitor = mon.getInventory(source);
+			if (monitor == null || monitor.getFluidInventory() == null) {
+				continue;
 			}
-			for (EnumFacing dir : EnumFacing.VALUES) {
-				MachineSource source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
-				IStorageMonitorable monitor = mon.getMonitorable(dir, source);
-				if (monitor == null || monitor.getFluidInventory() == null) {
-					continue;
+			IMEMonitor<IAEFluidStack> fluids = monitor.getFluidInventory();
+			for (IAEFluidStack stack : fluids.getStorageList()) {
+				if (SimpleServiceLocator.extraCellsProxy.canSeeFluidInNetwork(stack.getFluid())) {
+					map.put(FluidIdentifier.get(stack.getFluid(), stack.getTagCompound() != null ? stack.getTagCompound().getNBTTagCompoundCopy() : null, null), stack.getStackSize());
 				}
-				IMEMonitor<IAEFluidStack> fluids = monitor.getFluidInventory();
-				for (IAEFluidStack stack : fluids.getStorageList()) {
-					if (SimpleServiceLocator.extraCellsProxy.canSeeFluidInNetwork(stack.getFluid())) {
-						map.put(FluidIdentifier.get(stack.getFluid(), stack.getTagCompound() != null ? stack.getTagCompound().getNBTTagCompoundCopy() : null, null), stack.getStackSize());
-					}
-				}
-				return map;
 			}
+			return map;
 		}
 		return map;
 	}
@@ -90,25 +90,23 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 	@SuppressWarnings("unused")
 	@Override
 	public FluidStack drainFrom(TileEntity tile, FluidIdentifier ident, Integer amount, boolean drain) {
-		if (tile instanceof ITileStorageMonitorable) {
-			ITileStorageMonitorable mon = (ITileStorageMonitorable) tile;
-			if (mon == null) {
+		IStorageMonitorableAccessor mon = AEUtils.getStorageMonitorableAccessor(tile, null);
+		if (mon == null) {
+			return null;
+		}
+		for (EnumFacing dir : EnumFacing.VALUES) {
+			MachineSource source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir))));
+			IStorageMonitorable monitor = mon.getInventory(source);
+			if (monitor == null || monitor.getFluidInventory() == null) {
+				continue;
+			}
+			IMEMonitor<IAEFluidStack> fluids = monitor.getFluidInventory();
+			IAEFluidStack s = AEApi.instance().storage().createFluidStack(ident.makeFluidStack(amount));
+			IAEFluidStack extracted = fluids.extractItems(s, drain ? Actionable.MODULATE : Actionable.SIMULATE, source);
+			if (extracted == null) {
 				return null;
 			}
-			for (EnumFacing dir : EnumFacing.VALUES) {
-				MachineSource source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
-				IStorageMonitorable monitor = mon.getMonitorable(dir, source);
-				if (monitor == null || monitor.getFluidInventory() == null) {
-					continue;
-				}
-				IMEMonitor<IAEFluidStack> fluids = monitor.getFluidInventory();
-				IAEFluidStack s = AEApi.instance().storage().createFluidStack(ident.makeFluidStack(amount));
-				IAEFluidStack extracted = fluids.extractItems(s, drain ? Actionable.MODULATE : Actionable.SIMULATE, source);
-				if (extracted == null) {
-					return null;
-				}
-				return extracted.getFluidStack();
-			}
+			return extracted.getFluidStack();
 		}
 		return null;
 	}
@@ -134,7 +132,7 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 		if (world == null) {
 			return null;
 		}
-		return world.getTileEntity(coord.x, coord.y, coord.z);
+		return world.getTileEntity(coord.getPos());
 	}
 
 	private class LPActionHost implements IActionHost {
@@ -146,17 +144,17 @@ public class AETankHandler implements ISpecialTankAccessHandler {
 		}
 
 		@Override
+		public IGridNode getGridNode(AEPartLocation aePartLocation) {
+			return null;
+		}
+
+		@Override
+		public AECableType getCableConnectionType(AEPartLocation aePartLocation) {
+			return null;
+		}
+
+		@Override
 		public void securityBreak() {}
-
-		@Override
-		public IGridNode getGridNode(EnumFacing paramEnumFacing) {
-			return null;
-		}
-
-		@Override
-		public AECableType getCableConnectionType(EnumFacing paramEnumFacing) {
-			return null;
-		}
 
 		@Override
 		public IGridNode getActionableNode() {

@@ -4,6 +4,7 @@ import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import codechicken.enderstorage.common.BlockEnderStorage;
@@ -17,8 +18,8 @@ public class EnderStorageProxy implements IEnderStorageProxy {
 	}
 
 	@Override
-	public void openEnderChest(World world, int x, int y, int z, EntityPlayer player) {
-		TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
+	public void openEnderChest(World world, BlockPos pos, EntityPlayer player) {
+		TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
 		tile.activate(player, 0);
 	}
 }

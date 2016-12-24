@@ -4,7 +4,6 @@ import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.DSUInventoryHandler;
-import logisticspipes.proxy.specialinventoryhandler.JABBAInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.StorageDrawersInventoryHandler;
 
 import net.minecraftforge.fml.common.Loader;
@@ -24,9 +23,9 @@ public class SpecialInventoryHandlerManager {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
 		}
 
-		if (Loader.isModLoaded("JABBA")) {
+		/* if (Loader.isModLoaded("JABBA")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new JABBAInventoryHandler());
-		}
+		} */
 
 		if (Loader.isModLoaded("StorageDrawers")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new StorageDrawersInventoryHandler());

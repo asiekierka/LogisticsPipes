@@ -13,7 +13,6 @@ import logisticspipes.LPConstants;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.textures.provider.LPPipeIconProvider;
-import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
 
 public class Textures {
 
@@ -147,7 +146,6 @@ public class Textures {
 	public static String LOGISTICS_SOLID_BLOCK = Textures.LOGISTICSPIPE_TEXTURE_FILE;
 	public static IIconProvider LPactionIconProvider;
 	public static LPPipeIconProvider LPpipeIconProvider;
-	public static LPPipeIconTransformerProvider LPnewPipeIconProvider;
 
 	static {
 		Textures.empty.normal = 0;
@@ -177,7 +175,7 @@ public class Textures {
 	public Textures() {
 		Textures.LPactionIconProvider = new LPActionTriggerIconProvider();
 		Textures.LPpipeIconProvider = new LPPipeIconProvider();
-		Textures.LPnewPipeIconProvider = new LPPipeIconTransformerProvider();
+		// Textures.LPnewPipeIconProvider = new LPPipeIconTransformerProvider();
 	}
 
 	//this gets called with null par1TextureAtlasSpriteRegister from preinit, and later with non-null from textureprestitch

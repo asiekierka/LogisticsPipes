@@ -120,23 +120,26 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		}
 
 		if (!dummyPipe.isMultiBlock()) {
-			if (world.canPlaceEntityOnSide(block, i, j, k, false, side, entityplayer, itemstack)) {
+			if (world.canBlockBePlaced(block, new BlockPos(i, j, k), false, EnumFacing.getFront(side), entityplayer, itemstack)) {
 				CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(this);
 
 				if (pipe == null) {
 					LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[] { i, j, k });
-					return true;
+					return EnumActionResult.FAIL;
 				}
 
-				if (LogisticsBlockGenericPipe.placePipe(pipe, world, i, j, k, block, 0)) {
-					block.onBlockPlacedBy(world, i, j, k, entityplayer, itemstack);
+				BlockPos posP = new BlockPos(i, j, k);
+				IBlockState state = block.getDefaultState();
+
+				if (LogisticsBlockGenericPipe.placePipe(pipe, world, posP, state)) {
+					block.onBlockPlacedBy(world, posP, state, entityplayer, itemstack);
 
 					itemstack.stackSize--;
 				}
 
 				return EnumActionResult.SUCCESS;
 			} else {
-				return false;
+				return EnumActionResult.SUCCESS;
 			}
 		} else {
 			CoreMultiBlockPipe multiPipe = (CoreMultiBlockPipe) dummyPipe;
@@ -147,19 +150,19 @@ public class ItemLogisticsPipe extends LogisticsItem {
 			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> positions = multiPipe.getSubBlocks();
 			ITubeOrientation orientation = multiPipe.getTubeOrientation(entityplayer, i, k);
 			if (orientation == null) {
-				return false;
+				return EnumActionResult.PASS;
 			}
 			orientation.rotatePositions(positions);
-			positions.stream().map(pos -> pos.add(placeAt)).forEach(globalPos::add);
+			positions.stream().map(posP -> posP.add(placeAt)).forEach(globalPos::add);
 			globalPos.addToAll(orientation.getOffset());
 			placeAt.add(orientation.getOffset());
 
-			for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : globalPos) {
-				if (!world.canPlaceEntityOnSide(block, pos.getXInt(), pos.getYInt(), pos.getZInt(), false, side, entityplayer, itemstack)) {
-					TileEntity tile = world.getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+			for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> posP : globalPos) {
+				if (!world.canBlockBePlaced(block, posP.getBlockPos(), false, EnumFacing.getFront(side), entityplayer, itemstack)) {
+					TileEntity tile = world.getTileEntity(posP.getBlockPos());
 					boolean canPlace = false;
 					if(tile instanceof LogisticsTileGenericSubMultiBlock) {
-						if(CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), pos.getType())) {
+						if(CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), posP.getType())) {
 							canPlace = true;
 						}
 					}
@@ -174,17 +177,20 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 				if (pipe == null) {
 					LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[] { i, j, k });
-					return true;
+					return EnumActionResult.FAIL;
 				}
 
-				if (LogisticsBlockGenericPipe.placePipe(pipe, world, placeAt.getXInt(), placeAt.getYInt(), placeAt.getZInt(), block, 0, orientation)) { //TODO
-					block.onBlockPlacedBy(world, i, j, k, entityplayer, itemstack);
+				BlockPos posP = new BlockPos(placeAt.getXInt(), placeAt.getYInt(), placeAt.getZInt());
+				IBlockState state = block.getDefaultState();
+
+				if (LogisticsBlockGenericPipe.placePipe(pipe, world, posP, state, orientation)) { //TODO
+					block.onBlockPlacedBy(world, posP, state, entityplayer, itemstack);
 					itemstack.stackSize--;
 				}
 
-				return true;
+				return EnumActionResult.SUCCESS;
 			} else {
-				return false;
+				return EnumActionResult.PASS;
 			}
 		}
 	}
@@ -199,7 +205,8 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		newPipeIconIndex = newIndex;
 	}
 
-	@Override
+	// TODO: Rendering
+	/* @Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int par1) {
 		if (iconProvider != null) { // invalid pipes won't have this set
@@ -207,7 +214,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		} else {
 			return null;
 		}
-	}
+	} */
 
 	public int getNewPipeIconIndex() {
 		return newPipeIconIndex;
@@ -222,18 +229,6 @@ public class ItemLogisticsPipe extends LogisticsItem {
 			throw new UnsupportedOperationException("Can't reset this");
 		}
 		newPipeRenderList = list;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister) {
-		// NOOP
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public int getSpriteNumber() {
-		return 0;
 	}
 
 	public void setDummyPipe(CoreUnroutedPipe pipe) {

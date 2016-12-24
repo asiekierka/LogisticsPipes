@@ -39,10 +39,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 
-import codechicken.lib.render.CCRenderState;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import org.lwjgl.opengl.GL11;
-import tv.twitch.Core;
 
 public class RenderTickHandler {
 
@@ -79,7 +77,8 @@ public class RenderTickHandler {
 
 	@SubscribeEvent
 	public void renderWorldLast(RenderWorldLastEvent worldEvent) {
-		if (LogisticsRenderPipe.config.isUseNewRenderer()) {
+		// TODO: Rendering
+/*		if (LogisticsRenderPipe.config.isUseNewRenderer()) {
 			if (displayPipeGhost()) {
 				Minecraft mc = Minecraft.getMinecraft();
 				EntityPlayer player = mc.thePlayer;
@@ -207,7 +206,7 @@ public class RenderTickHandler {
 					}
 				}
 			}
-		}
+		} */
 	}
 
 	private boolean displayPipeGhost() {
