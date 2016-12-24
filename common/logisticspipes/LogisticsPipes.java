@@ -16,7 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import net.minecraft.block.Block;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -144,7 +143,6 @@ import logisticspipes.recipes.CraftingPermissionManager;
 import logisticspipes.recipes.LPChipRecipes;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.Recipes;
-import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.routing.RouterManager;
@@ -173,10 +171,6 @@ import network.rs485.grow.TickExecutor;
 		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */
 		dependencies = "required-after:Forge@[10.12.1.1079,);" +
-				"required-after:BuildCraft|Core;" +
-				"required-after:BuildCraft|Transport;" +
-				"required-after:BuildCraft|Silicon;" +
-				"required-after:BuildCraft|Robotics;" +
 				"after:IC2;" +
 				"after:Forestry;" +
 				"after:Thaumcraft;" +
@@ -382,9 +376,10 @@ public class LogisticsPipes {
 			Calendar calendar = Calendar.getInstance();
 			int day = calendar.get(Calendar.DAY_OF_MONTH);
 			int month = calendar.get(Calendar.MONTH);
-			if (month == Calendar.OCTOBER && day == 1) { //GUIpsp's birthday.
-				Items.slime_ball.setTextureName("logisticspipes:eastereggs/guipsp");
-			}
+			// TODO: Add model replacement in ModelBakeEvent
+			/* if (month == Calendar.OCTOBER && day == 1) { //GUIpsp's birthday.
+				Items.SLIME_BALL.setTextureName("logisticspipes:eastereggs/guipsp");
+			} */
 		}
 
 		initItems(evt.getSide());

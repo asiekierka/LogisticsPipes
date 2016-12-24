@@ -5,9 +5,7 @@ import java.util.Map;
 
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.renderer.CustomBlockRenderer;
 import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
-import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 

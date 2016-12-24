@@ -7,12 +7,12 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.item.ItemIdentifier;
 
 
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import net.minecraftforge.client.IItemRenderer;
 
 public interface IProxy {
 
@@ -24,7 +24,7 @@ public interface IProxy {
 
 	public EntityPlayer getClientPlayer();
 
-	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag);
+	public void addLogisticsPipesOverride(TextureMap par1IIconRegister, int index, String override1, String override2, boolean flag);
 
 	public void registerParticles();
 
@@ -51,8 +51,6 @@ public interface IProxy {
 	public void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe);
 
 	public LogisticsModule getModuleFromGui();
-
-	public IItemRenderer getPipeItemRenderer();
 
 	public boolean checkSinglePlayerOwner(String commandSenderName);
 

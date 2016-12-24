@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
-
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 
 public class LPPipeIconTransformerProvider {
@@ -15,7 +15,7 @@ public class LPPipeIconTransformerProvider {
 		return icons.get(iconIndex);
 	}
 
-	public void setIcon(int index, IIcon icon) {
+	public void setIcon(int index, TextureAtlasSprite icon) {
 		while (icons.size() < index + 1) {
 			icons.add(null);
 		}

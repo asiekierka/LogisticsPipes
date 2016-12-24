@@ -279,13 +279,13 @@ public class ProxyManager {
 			@Override public Object getAnswer(Object object) {return object;}
 		}));
 
-		SimpleServiceLocator.setThaumCraftProxy(ProxyManager.getWrappedProxy("Thaumcraft", IThaumCraftProxy.class, ThaumCraftProxy.class, new IThaumCraftProxy() {
+		SimpleServiceLocator.setThaumCraftProxy(new IThaumCraftProxy() {
 			@Override public boolean isScannedObject(ItemStack stack, String playerName) {return false;}
 			@Override public List<String> getListOfTagsForStack(ItemStack stack) {return null;}
 			@Override @SideOnly(Side.CLIENT) public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
 			@Override @SideOnly(Side.CLIENT) public void renderAspectsInGrid(List<String> eTags, int x, int y, int legnth, int width, GuiScreen gui) {}
 			@Override public void addCraftingRecipes(CraftingParts parts) {}
-		}));
+		});
 
 		SimpleServiceLocator.setThermalExpansionProxy(ProxyManager.getWrappedProxy("ThermalExpansion", IThermalExpansionProxy.class, ThermalExpansionProxy.class, new IThermalExpansionProxy() {
 			@Override public boolean isTesseract(TileEntity tile) {return false;}

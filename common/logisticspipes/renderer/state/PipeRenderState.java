@@ -3,7 +3,7 @@ package logisticspipes.renderer.state;
 import java.util.List;
 
 
-
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,9 +31,9 @@ public class PipeRenderState implements IClientState {
 	 * This is a placeholder for the pipe renderer to set to a value that the BlockGenericPipe->TileGenericPipe will then return the the WorldRenderer
 	 */
 	@SideOnly(Side.CLIENT)
-	public IIcon currentTexture;
+	public TextureAtlasSprite currentTexture;
 	@SideOnly(Side.CLIENT)
-	public IIcon[] textureArray;
+	public TextureAtlasSprite[] textureArray;
 
 	private boolean dirty = true;
 

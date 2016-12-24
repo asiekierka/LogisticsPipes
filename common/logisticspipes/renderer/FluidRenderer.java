@@ -3,10 +3,9 @@ package logisticspipes.renderer;
 import java.util.HashMap;
 import java.util.Map;
 
-import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Blocks;
 
@@ -21,10 +20,9 @@ import org.lwjgl.opengl.GL11;
 public final class FluidRenderer {
 
 	public static final int DISPLAY_STAGES = 100;
-	private static final ResourceLocation BLOCK_TEXTURE = TextureMap.locationBlocksTexture;
+	private static final ResourceLocation BLOCK_TEXTURE = TextureMap.LOCATION_BLOCKS_TEXTURE;
 	private static Map<Fluid, int[]> flowingRenderCache = new HashMap<>();
 	private static Map<Fluid, int[]> stillRenderCache = new HashMap<>();
-	private static final RenderInfo liquidBlock = new RenderInfo();
 
 	/**
 	 * Deactivate default constructor
@@ -33,22 +31,23 @@ public final class FluidRenderer {
 
 	}
 
-	public static IIcon getFluidTexture(FluidStack fluidStack, boolean flowing) {
+	public static TextureAtlasSprite getFluidTexture(FluidStack fluidStack, boolean flowing) {
 		if (fluidStack == null) {
 			return null;
 		}
 		return FluidRenderer.getFluidTexture(fluidStack.getFluid(), flowing);
 	}
 
-	public static IIcon getFluidTexture(Fluid fluid, boolean flowing) {
+	public static TextureAtlasSprite getFluidTexture(Fluid fluid, boolean flowing) {
 		if (fluid == null) {
 			return null;
 		}
-		IIcon icon = flowing ? fluid.getFlowingIcon() : fluid.getStillIcon();
+		ResourceLocation icon = flowing ? fluid.getFlowing() : fluid.getStill();
 		if (icon == null) {
-			icon = ((TextureMap) Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture)).getAtlasSprite("missingno");
+			return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("missingno");
+		} else {
+			return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(icon.toString());
 		}
-		return icon;
 	}
 
 	public static ResourceLocation getFluidSheet(FluidStack liquid) {
@@ -94,11 +93,12 @@ public final class FluidRenderer {
 
 		diplayLists = new int[FluidRenderer.DISPLAY_STAGES];
 
-		if (fluid.getBlock() != null) {
+		// TODO: Rewrite for 1.8+
+		/* if (fluid.getBlock() != null) {
 			FluidRenderer.liquidBlock.baseBlock = fluid.getBlock();
 			FluidRenderer.liquidBlock.texture = FluidRenderer.getFluidTexture(fluidStack, flowing);
 		} else {
-			FluidRenderer.liquidBlock.baseBlock = Blocks.water;
+			FluidRenderer.liquidBlock.baseBlock = Blocks.WATER;
 			FluidRenderer.liquidBlock.texture = FluidRenderer.getFluidTexture(fluidStack, flowing);
 		}
 
@@ -110,7 +110,7 @@ public final class FluidRenderer {
 
 		for (int s = 0; s < FluidRenderer.DISPLAY_STAGES; ++s) {
 			diplayLists[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(diplayLists[s], 4864 /*GL_COMPILE*/);
+			GL11.glNewList(diplayLists[s], GL11.GL_COMPILE);
 
 			FluidRenderer.liquidBlock.minX = 0.01f;
 			FluidRenderer.liquidBlock.minY = 0;
@@ -129,6 +129,7 @@ public final class FluidRenderer {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_LIGHTING);
+		*/
 
 		return diplayLists;
 	}

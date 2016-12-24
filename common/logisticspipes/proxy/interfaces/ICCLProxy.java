@@ -13,12 +13,12 @@ import logisticspipes.proxy.object3d.interfaces.IRenderState;
 import logisticspipes.proxy.object3d.interfaces.ITranslation;
 import logisticspipes.proxy.object3d.interfaces.IVec3;
 import logisticspipes.proxy.object3d.operation.LPScale;
-
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 
 public interface ICCLProxy {
 
-	IIconTransformation createIconTransformer(IIcon registerIcon);
+	IIconTransformation createIconTransformer(TextureAtlasSprite registerIcon);
 
 	IRenderState getRenderState();
 
