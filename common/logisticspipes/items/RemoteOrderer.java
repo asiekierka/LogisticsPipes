@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.DimensionManager;
@@ -95,7 +96,7 @@ public class RemoteOrderer extends Item {
 	}
 
 	public static void connectToPipe(ItemStack stack, PipeItemsRemoteOrdererLogistics pipe) {
-		stack.stackTagCompound = new NBTTagCompound();
+		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setInteger("connectedPipe-x", pipe.getX());
 		stack.getTagCompound().setInteger("connectedPipe-y", pipe.getY());
 		stack.getTagCompound().setInteger("connectedPipe-z", pipe.getZ());
@@ -127,7 +128,7 @@ public class RemoteOrderer extends Item {
 		if (world == null) {
 			return null;
 		}
-		TileEntity tile = world.getTileEntity(stack.getTagCompound().getInteger("connectedPipe-x"), stack.getTagCompound().getInteger("connectedPipe-y"), stack.getTagCompound().getInteger("connectedPipe-z"));
+		TileEntity tile = world.getTileEntity(new BlockPos(stack.getTagCompound().getInteger("connectedPipe-x"), stack.getTagCompound().getInteger("connectedPipe-y"), stack.getTagCompound().getInteger("connectedPipe-z")));
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
@@ -140,7 +141,7 @@ public class RemoteOrderer extends Item {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabTools;
+		return CreativeTabs.TOOLS;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

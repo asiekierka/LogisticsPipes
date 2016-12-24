@@ -98,8 +98,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 			((LogisticsCraftingTableTileEntity) tile).placedBy(entity);
 		}
 		if (tile instanceof IRotationProvider) {
-			double x = tile.xCoord + 0.5 - entity.posX;
-			double z = tile.zCoord + 0.5 - entity.posZ;
+			double x = tile.getPos().getX() + 0.5 - entity.posX;
+			double z = tile.getPos().getZ() + 0.5 - entity.posZ;
 			double w = Math.atan2(x, z);
 			double halfPI = Math.PI / 2;
 			double halfhalfPI = halfPI / 2;

@@ -32,6 +32,7 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -185,18 +186,12 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public int getDimensionForWorld(World world) {
-		if (world instanceof WorldServer) {
-			return ((WorldServer) world).provider.dimensionId;
-		}
-		if (world instanceof WorldClient) {
-			return ((WorldClient) world).provider.dimensionId;
-		}
-		return world.getWorldInfo().getVanillaDimension();
+		return world.provider.getDimension();
 	}
 
 	@Override
-	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
-		return ServerProxy.getPipe(DimensionManager.getWorld(dimension), x, y, z);
+	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, BlockPos pos, EntityPlayer player) {
+		return ServerProxy.getPipe(DimensionManager.getWorld(dimension), pos);
 	}
 
 	// BuildCraft method
@@ -209,15 +204,15 @@ public class ServerProxy implements IProxy {
 	 * @param z
 	 * @return
 	 */
-	protected static LogisticsTileGenericPipe getPipe(World world, int x, int y, int z) {
+	protected static LogisticsTileGenericPipe getPipe(World world, BlockPos pos) {
 		if (world == null) {
 			return null;
 		}
-		if (!world.blockExists(x, y, z)) {
+		if (!world.isBlockLoaded(pos)) {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(x, y, z);
+		final TileEntity tile = world.getTileEntity(pos);
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
@@ -236,10 +231,10 @@ public class ServerProxy implements IProxy {
 	@SuppressWarnings("rawtypes")
 	public void sendBroadCast(String message) {
 		MinecraftServer server = FMLServerHandler.instance().getServer();
-		if (server != null && server.getConfigurationManager() != null) {
-			List list = server.getConfigurationManager().playerEntityList;
+		if (server != null && server.getPlayerList() != null) {
+			List<EntityPlayerMP> list = server.getPlayerList().getPlayerList();
 			if (list != null && !list.isEmpty()) {
-				list.stream().filter(obj -> obj instanceof EntityPlayerMP).forEach(obj -> ((EntityPlayerMP) obj).addChatMessage(new TextComponentString("[LP] Server: " + message)));
+				list.stream().forEach(player -> player.addChatMessage(new TextComponentString("[LP] Server: " + message)));
 			}
 		}
 	}

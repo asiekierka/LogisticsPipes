@@ -3,9 +3,12 @@ package logisticspipes.pipefxhandlers;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -39,8 +42,9 @@ public class EntitySparkleFX extends Particle {
 	private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
 
 	@Override
-	public void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7) {
-		var1.draw();
+	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+   		Tessellator.getInstance().draw();
+
 		GL11.glPushMatrix();
 		GL11.glDepthMask(false);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -69,7 +73,8 @@ public class EntitySparkleFX extends Particle {
 		GL11.glDepthMask(true);
 		GL11.glPopMatrix();
 		Minecraft.getMinecraft().renderEngine.bindTexture(EntitySparkleFX.field_110737_b);
-		var1.startDrawingQuads();
+
+		worldRendererIn.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 	}
 
 	/**
@@ -78,7 +83,7 @@ public class EntitySparkleFX extends Particle {
 	@Override
 	public void onUpdate() {
 		try {
-			EntityClientPlayerMP var1 = Minecraft.getMinecraft().thePlayer;
+			EntityPlayerSP var1 = Minecraft.getMinecraft().thePlayer;
 
 			if (var1.getDistance(posX, posY, posZ) > 50) {
 				setDead();

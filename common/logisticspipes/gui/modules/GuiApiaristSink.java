@@ -14,9 +14,9 @@ import logisticspipes.utils.gui.ISmallColorRenderSlot;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IIcon;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -46,7 +46,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
-			IIcon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
+			TextureAtlasSprite icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
 			if (icon == null) {
 				continue;
 			}
@@ -57,14 +57,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 
 			GL11.glColor4f(colorR, colorG, colorB, 1.0F);
 
-			// Render icon
-			Tessellator var9 = Tessellator.instance;
-			var9.startDrawingQuads();
-			var9.addVertexWithUV(x, y + 16, zLevel, icon.getMinU(), icon.getMaxV());
-			var9.addVertexWithUV(x + 16, y + 16, zLevel, icon.getMaxU(), icon.getMaxV());
-			var9.addVertexWithUV(x + 16, y, zLevel, icon.getMaxU(), icon.getMinV());
-			var9.addVertexWithUV(x, y, zLevel, icon.getMinU(), icon.getMinV());
-			var9.draw();
+			drawTexturedModalRect(x, y, icon, 16, 16);
 		}
 		GL11.glEnable(GL11.GL_LIGHTING);
 	}
@@ -90,7 +83,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 
 		@Override
 		@SideOnly(Side.CLIENT)
-		public IIcon getTextureIcon() {
+		public TextureAtlasSprite getTextureIcon() {
 			if (setting.filterType == null) {
 				return null;
 			}
@@ -334,7 +327,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 
 		@Override
 		@SideOnly(Side.CLIENT)
-		public IIcon getTextureIcon() {
+		public TextureAtlasSprite getTextureIcon() {
 			return null;
 		}
 

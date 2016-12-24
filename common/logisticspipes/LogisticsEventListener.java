@@ -12,7 +12,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -97,45 +97,47 @@ public class LogisticsEventListener {
 	}
 
 	@SubscribeEvent
-	public void onPlayerInteract(final PlayerInteractEvent event) {
+	public void onPlayerInteract(final PlayerInteractEvent.LeftClickBlock event) {
 		if (MainProxy.isServer(event.getEntityPlayer().worldObj)) {
-			if (event.action == Action.LEFT_CLICK_BLOCK) {
-				final TileEntity tile = event.getEntityPlayer().worldObj.getTileEntity(event.x, event.y, event.z);
-				if (tile instanceof LogisticsTileGenericPipe) {
-					if (((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
-						if (!((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).canBeDestroyedByPlayer(event.getEntityPlayer())) {
-							event.setCanceled(true);
-							event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
-							((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
-							event.getEntityPlayer().worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
-							((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).delayTo = System.currentTimeMillis() + 200;
-							((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).repeatFor = 10;
-						} else {
-							((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).setDestroyByPlayer();
-						}
+			final TileEntity tile = event.getEntityPlayer().worldObj.getTileEntity(event.x, event.y, event.z);
+			if (tile instanceof LogisticsTileGenericPipe) {
+				if (((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
+					if (!((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).canBeDestroyedByPlayer(event.getEntityPlayer())) {
+						event.setCanceled(true);
+						event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+						((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
+						event.getEntityPlayer().worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
+						((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).delayTo = System.currentTimeMillis() + 200;
+						((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).repeatFor = 10;
+					} else {
+						((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).setDestroyByPlayer();
 					}
 				}
 			}
-			if (event.action == Action.RIGHT_CLICK_BLOCK) {
-				WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().worldObj, event.x, event.y, event.z);
-				TileEntity tileEntity = worldCoordinates.getTileEntity();
-				if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
-					//@formatter:off
-					List<WeakReference<ModuleQuickSort>> list = worldCoordinates.getAdjacentTileEntities()
-							.filter(adjacent -> adjacent.tileEntity instanceof LogisticsTileGenericPipe)
-							.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe instanceof PipeLogisticsChassi)
-							.filter(adjacent -> ((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).getPointedOrientation()
-									== adjacent.direction.getOpposite())
-							.map(adjacent -> (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe)
-							.flatMap(pipeLogisticsChassi -> Arrays.stream(pipeLogisticsChassi.getModules().getModules()))
-							.filter(logisticsModule -> logisticsModule instanceof ModuleQuickSort)
-							.map(logisticsModule -> new WeakReference<>((ModuleQuickSort) logisticsModule))
-							.collect(Collectors.toList());
-					//@formatter:on
+		}
+	}
 
-					if (!list.isEmpty()) {
-						LogisticsEventListener.chestQuickSortConnection.put(event.getEntityPlayer(), list);
-					}
+	@SubscribeEvent
+	public void onPlayerInteract(final PlayerInteractEvent.RightClickBlock event) {
+		if (MainProxy.isServer(event.getEntityPlayer().worldObj)) {
+			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().worldObj, event.x, event.y, event.z);
+			TileEntity tileEntity = worldCoordinates.getTileEntity();
+			if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
+				//@formatter:off
+				List<WeakReference<ModuleQuickSort>> list = worldCoordinates.getAdjacentTileEntities()
+						.filter(adjacent -> adjacent.tileEntity instanceof LogisticsTileGenericPipe)
+						.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe instanceof PipeLogisticsChassi)
+						.filter(adjacent -> ((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).getPointedOrientation()
+								== adjacent.direction.getOpposite())
+						.map(adjacent -> (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe)
+						.flatMap(pipeLogisticsChassi -> Arrays.stream(pipeLogisticsChassi.getModules().getModules()))
+						.filter(logisticsModule -> logisticsModule instanceof ModuleQuickSort)
+						.map(logisticsModule -> new WeakReference<>((ModuleQuickSort) logisticsModule))
+						.collect(Collectors.toList());
+				//@formatter:on
+
+				if (!list.isEmpty()) {
+					LogisticsEventListener.chestQuickSortConnection.put(event.getEntityPlayer(), list);
 				}
 			}
 		}
@@ -263,7 +265,7 @@ public class LogisticsEventListener {
 			LogisticsPipes.singleThreadExecutor.execute(() -> {
 				// try to get player entity ten times, once a second
 				int times = 0;
-				EntityClientPlayerMP playerEntity;
+				EntityPlayerSP playerEntity;
 				do {
 					try {
 						Thread.sleep(1000);

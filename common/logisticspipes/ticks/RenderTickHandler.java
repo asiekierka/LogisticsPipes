@@ -4,7 +4,9 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.renderer.LogisticsRenderPipe;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -82,21 +84,22 @@ public class RenderTickHandler {
 				Minecraft mc = Minecraft.getMinecraft();
 				EntityPlayer player = mc.thePlayer;
 				RayTraceResult box = mc.objectMouseOver;
-				if (box != null && box.typeOfHit == MovingObjectType.BLOCK) {
+				if (box != null && box.typeOfHit == Type.BLOCK) {
 					ItemStack stack = FMLClientHandler.instance().getClient().thePlayer.inventory.mainInventory[FMLClientHandler.instance().getClient().thePlayer.inventory.currentItem];
 					CoreUnroutedPipe pipe = ((ItemLogisticsPipe) stack.getItem()).getDummyPipe();
 
-					int i = box.blockX;
-					int j = box.blockY;
-					int k = box.blockZ;
+					int i = box.getBlockPos().getX();
+					int j = box.getBlockPos().getY();
+					int k = box.getBlockPos().getZ();
 					World world = player.getEntityWorld();
-					int side = box.sideHit;
+					int side = box.sideHit.ordinal();
 
-					Block worldBlock = world.getBlock(i, j, k);
+					IBlockState worldState = world.getBlockState(box.getBlockPos());
+					Block worldBlock = worldState.getBlock();
 
-					if (worldBlock == Blocks.snow) {
+					if (worldBlock == Blocks.SNOW) {
 						side = 1;
-					} else if (worldBlock != Blocks.vine && worldBlock != Blocks.tallgrass && worldBlock != Blocks.deadbush && (worldBlock == null || !worldBlock.isReplaceable(world, i, j, k))) {
+					} else if (worldBlock != Blocks.VINE && worldBlock != Blocks.TALLGRASS && worldBlock != Blocks.DEADBUSH && !worldBlock.isReplaceable(world, new BlockPos(i, j, k))) {
 						if (side == 0) {
 							j--;
 						}
@@ -138,7 +141,7 @@ public class RenderTickHandler {
 
 							for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : globalPos) {
 								if (!player.getEntityWorld().canPlaceEntityOnSide(LogisticsPipes.LogisticsPipeBlock, pos.getXInt(), pos.getYInt(), pos.getZInt(), false, side, player, stack)) {
-									TileEntity tile = player.getEntityWorld().getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+									TileEntity tile = player.getEntityWorld().getTileEntity(pos.getBlockPos());
 									boolean canPlace = false;
 									if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 										if (CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), pos.getType())) {

@@ -3,14 +3,14 @@ package logisticspipes.logic.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
@@ -73,7 +73,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
 
 	private final LogicController controller;
-	private final RenderItem renderitem = new RenderItem();
+	private final RenderItem renderItem;
 
 	private int isMouseButtonDown;
 	private int mouseX;
@@ -92,6 +92,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		DummyContainer dummy = new DummyContainer(player.inventory, null);
 		dummy.addNormalSlotsForPlayerInventory(50, 205);
 		inventorySlots = dummy;
+		renderItem = Minecraft.getMinecraft().getRenderItem();
 	}
 
 	@Override
@@ -198,9 +199,9 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		for (int yVar = 0; yVar * 16 - moveBackgroundY < zoom.bottomRenderBorder; yVar++) {
 			for (int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
-				IIcon icon = Blocks.stone.getIcon(0, 0);
-				mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-				drawTexturedModelRectFromIcon(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
+				TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/stone");
+				mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+				drawTexturedModalRect(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
 			}
 		}
 
@@ -377,13 +378,13 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 	}
 
 	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
-		renderitem.renderItemAndEffectIntoGUI(mc.fontRendererObj, mc.getTextureManager(), item.makeNormalStack(), x, y);
+		renderItem.renderItemAndEffectIntoGUI(item.makeNormalStack(), x, y);
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
-			renderitem.renderItemOverlayIntoGUI(mc.fontRendererObj, mc.renderEngine, item.makeNormalStack(), x, y, "");
+			renderItem.renderItemOverlayIntoGUI(mc.fontRendererObj, item.makeNormalStack(), x, y, "");
 			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			renderitem.zLevel = 0.0F;
+			renderItem.zLevel = 0.0F;
 			// Draw number
 			mc.fontRendererObj.drawStringWithShadow(s, x + 17 - mc.fontRendererObj.getStringWidth(s), y + 9, 16777215);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);

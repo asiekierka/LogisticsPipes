@@ -80,7 +80,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 	@Override
 	//TODO use own pipe handling
-	//TODO use BlockPos more
+	//TODO
 	public EnumActionResult onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, BlockPos pos, EnumHand hand, EnumFacing sideI, float par8, float par9, float par10) {
 		int side = sideI.ordinal();
 		Block block = LogisticsPipes.LogisticsPipeBlock;

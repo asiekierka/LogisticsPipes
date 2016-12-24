@@ -28,8 +28,6 @@ import net.minecraft.world.chunk.Chunk;
 
 import net.minecraft.util.EnumFacing;
 
-import buildcraft.transport.TravelingItem;
-
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -92,22 +90,22 @@ public class PipeTransportLogistics {
 	public void initialize() {
 		if (MainProxy.isServer(getWorld())) {
 			// cache chunk for marking dirty
-			chunk = getWorld().getChunkFromBlockCoords(container.xCoord, container.zCoord);
+			chunk = getWorld().getChunkFromBlockCoords(container.getPos());
 			ItemBufferSyncPacket packet = PacketHandler.getPacket(ItemBufferSyncPacket.class);
 			packet.setTilePos(container);
-			_itemBuffer.setPacketType(packet, MainProxy.getDimensionForWorld(getWorld()), container.xCoord, container.zCoord);
+			_itemBuffer.setPacketType(packet, MainProxy.getDimensionForWorld(getWorld()), container.getPos().getX(), container.getPos().getZ());
 		}
 	}
 
 	public void markChunkModified(TileEntity tile) {
 		if (tile != null && chunk != null) {
 			// items are crossing a chunk boundary, mark both chunks modified
-			if (container.xCoord >> 4 != tile.xCoord >> 4 || container.zCoord >> 4 != tile.zCoord >> 4) {
-				chunk.isModified = true;
+			if (container.getPos().getX() >> 4 != tile.getPos().getX() >> 4 || container.getPos().getZ() >> 4 != tile.getPos().getZ() >> 4) {
+				chunk.setModified(true);
 				if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe != null && ((LogisticsTileGenericPipe) tile).pipe.transport != null && ((LogisticsTileGenericPipe) tile).pipe.transport.chunk != null) {
-					((LogisticsTileGenericPipe) tile).pipe.transport.chunk.isModified = true;
+					((LogisticsTileGenericPipe) tile).pipe.transport.chunk.setModified(true);
 				} else {
-					getWorld().getChunkFromChunkCoords(tile.xCoord, tile.zCoord).isModified = true;
+					getWorld().getChunkFromChunkCoords(tile.getPos().getX(), tile.getPos().getZ()).setModified(true);
 				}
 			}
 		}
@@ -201,7 +199,7 @@ public class PipeTransportLogistics {
 			}
 			getPipe().debug.log("Injected Item: [" + item.input + ", " + item.output + "] (" + ((LPTravelingItemServer) item).getInfo());
 		} else {
-			item.output = EnumFacing.UNKNOWN;
+			item.output = null;
 		}
 
 		if (item.getPosition() >= getPipeLength()) {
@@ -256,7 +254,7 @@ public class PipeTransportLogistics {
 		item.output = resolveDestination(item);
 		if (item.output == null) {
 			return; // don't do anything
-		} else if (item.output == EnumFacing.UNKNOWN) {
+		} else if (item.output == null) {
 			dropItem(item);
 			return;
 		}
@@ -292,7 +290,7 @@ public class PipeTransportLogistics {
 			}
 		}
 		if (dirs.isEmpty()) {
-			return EnumFacing.UNKNOWN;
+			return null;
 		}
 		int num = new Random().nextInt(dirs.size());
 		return dirs.get(num);
@@ -324,7 +322,7 @@ public class PipeTransportLogistics {
 		EnumFacing value;
 		if (getRoutedPipe().stillNeedReplace() || getRoutedPipe().initialInit()) {
 			data.setDoNotBuffer(false);
-			value = EnumFacing.UNKNOWN;
+			value = null;
 		} else {
 			value = getRoutedPipe().getRouteLayer().getOrientationForItem(data, blocked);
 		}
@@ -332,14 +330,14 @@ public class PipeTransportLogistics {
 			return null;
 		} else if (value == null) {
 			LogisticsPipes.log.fatal("THIS IS NOT SUPPOSED TO HAPPEN!");
-			return EnumFacing.UNKNOWN;
+			return null;
 		}
-		if (value == EnumFacing.UNKNOWN && !data.getDoNotBuffer() && data.getBufferCounter() < 5) {
+		if (value == null && !data.getDoNotBuffer() && data.getBufferCounter() < 5) {
 			_itemBuffer.add(new Triplet<>(data.getItemIdentifierStack(), new Pair<>(_bufferTimeOut, data.getBufferCounter()), null));
 			return null;
 		}
 
-		if (value != EnumFacing.UNKNOWN && !getRoutedPipe().getRouter().isRoutedExit(value)) {
+		if (value != null && !getRoutedPipe().getRouter().isRoutedExit(value)) {
 			if (!isItemExitable(data.getItemIdentifierStack())) {
 				return null;
 			}
@@ -517,7 +515,7 @@ public class PipeTransportLogistics {
 					ITargetSlotInformation information = (ITargetSlotInformation) arrivingItem.getAdditionalTargetInformation();
 					IInventory inv = (IInventory) tile;
 					if (inv instanceof ISidedInventory) {
-						inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, EnumFacing.UNKNOWN, false);
+						inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, null, false);
 					}
 					IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 					if (util instanceof ISpecialInsertion) {
@@ -647,7 +645,7 @@ public class PipeTransportLogistics {
 		if (isRouted) {
 			if (tile instanceof ILogisticsPowerProvider || tile instanceof ISubSystemPowerProvider) {
 				EnumFacing ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
-				if (ori != null && ori != EnumFacing.UNKNOWN) {
+				if (ori != null && ori != null) {
 					return !((tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof ISubSystemPowerProvider) && !OrientationsUtil.isSide(ori));
 				}
 			}
@@ -657,7 +655,7 @@ public class PipeTransportLogistics {
 				return true;
 			}
 			if (tile instanceof ISidedInventory) {
-				int[] slots = ((ISidedInventory) tile).getAccessibleSlotsFromSide(side.getOpposite().ordinal());
+				int[] slots = ((ISidedInventory) tile).getSlotsForFace(side.getOpposite());
 				return slots != null && slots.length > 0;
 			}
 			return isPipeCheck(tile) || (tile instanceof IInventory && ((IInventory) tile).getSizeInventory() > 0);
@@ -692,7 +690,7 @@ public class PipeTransportLogistics {
 			item.addAge();
 			item.setPosition(item.getPosition() + item.getSpeed());
 			if (hasReachedEnd(item)) {
-				if (item.output == EnumFacing.UNKNOWN) {
+				if (item.output == null) {
 					if (MainProxy.isServer(container.getWorld())) {
 						dropItem((LPTravelingItemServer) item);
 					}
@@ -719,7 +717,7 @@ public class PipeTransportLogistics {
 	/**
 	 * Accept items from BC
 	 */
-	@ModDependentMethod(modId = "BuildCraft|Transport")
+	/* @ModDependentMethod(modId = "BuildCraft|Transport")
 	public void injectItem(TravelingItem item, EnumFacing inputOrientation) {
 		if (MainProxy.isServer(getWorld())) {
 			if (item instanceof LPRoutedBCTravelingItem) {
@@ -742,7 +740,7 @@ public class PipeTransportLogistics {
 				}
 			}
 		}
-	}
+	} */
 
 	private void dropItem(LPTravelingItemServer item) {
 		if (container.getWorld().isRemote) {
@@ -757,7 +755,7 @@ public class PipeTransportLogistics {
 	}
 
 	protected boolean hasReachedEnd(LPTravelingItem item) {
-		return item.getPosition() >= ((item.output == EnumFacing.UNKNOWN) ? 0.75F : getPipeLength());
+		return item.getPosition() >= ((item.output == null) ? 0.75F : getPipeLength());
 	}
 
 	protected void neighborChange() {}
@@ -777,12 +775,12 @@ public class PipeTransportLogistics {
 	}
 
 	private void sendItemPacket(LPTravelingItemServer item) {
-		if (MainProxy.isAnyoneWatching(container.xCoord, container.zCoord, MainProxy.getDimensionForWorld(getWorld()))) {
+		if (MainProxy.isAnyoneWatching(container.getPos().getX(), container.getPos().getZ(), MainProxy.getDimensionForWorld(getWorld()))) {
 			if (!LPTravelingItem.clientSideKnownIDs.get(item.getId())) {
-				MainProxy.sendPacketToAllWatchingChunk(container.xCoord, container.zCoord, MainProxy.getDimensionForWorld(getWorld()), (PacketHandler.getPacket(PipeContentPacket.class).setItem(item.getItemIdentifierStack()).setTravelId(item.getId())));
+				MainProxy.sendPacketToAllWatchingChunk(container.getPos().getX(), container.getPos().getZ(), MainProxy.getDimensionForWorld(getWorld()), (PacketHandler.getPacket(PipeContentPacket.class).setItem(item.getItemIdentifierStack()).setTravelId(item.getId())));
 				LPTravelingItem.clientSideKnownIDs.set(item.getId());
 			}
-			MainProxy.sendPacketToAllWatchingChunk(container.xCoord, container.zCoord, MainProxy.getDimensionForWorld(getWorld()),
+			MainProxy.sendPacketToAllWatchingChunk(container.getPos().getX(), container.getPos().getZ(), MainProxy.getDimensionForWorld(getWorld()),
 					(PacketHandler.getPacket(PipePositionPacket.class).setSpeed(item.getSpeed()).setPosition(item.getPosition()).setInput(item.input).setOutput(item.output).setTravelId(item.getId()).setYaw(item.getYaw()).setTilePos(container)));
 		}
 	}

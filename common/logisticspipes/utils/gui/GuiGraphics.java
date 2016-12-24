@@ -67,7 +67,7 @@ public final class GuiGraphics {
 			int j1 = (int) Math.round(13.0D - health * 13.0D);
 			int k = (int) Math.round(255.0D - health * 255.0D);
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			Tessellator tessellator = Tessellator.instance;
+			Tessellator tessellator = Tessellator.getInstance();
 			int l = 255 - k << 16 | k << 8;
 			int i1 = (255 - k) / 4 << 16 | 16128;
 			SimpleGraphics.drawQuad(tessellator, x + 2, y + 13, 13, 2, Color.BLACK, zLevel);
@@ -163,7 +163,7 @@ public final class GuiGraphics {
 			String var19 = msg.get(var18);
 
 			if (var18 == 0) {
-				var19 = "\u00a7" + rarityColor.getFormattingCode() + var19;
+				var19 = rarityColor.toString() + var19;
 			} else {
 				var19 = "\u00a77" + var19;
 			}

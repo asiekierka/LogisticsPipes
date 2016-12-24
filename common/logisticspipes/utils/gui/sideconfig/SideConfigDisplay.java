@@ -285,7 +285,7 @@ public abstract class SideConfigDisplay {
 		GL11.glPopMatrix();
 
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		if (selection.hit.typeOfHit == RayTraceResult.MovingObjectType.BLOCK)
+		if (selection.hit.typeOfHit == RayTraceResult.Type.BLOCK)
 		{
 			GL11.glEnable(GL11.GL_BLEND);
 			OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -294,9 +294,9 @@ public abstract class SideConfigDisplay {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glDepthMask(false);
 			float f1 = 0.002F;
-			Block block = mc.theWorld.getBlock(selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ);
+			IBlockState state = mc.theWorld.getBlockState(selection.hit.getBlockPos());
 
-			if (block.getMaterial() != Material.air)
+			if (state.getMaterial() != Material.air)
 			{
 				if(block instanceof LogisticsBlockGenericPipe) {
 					LogisticsBlockGenericPipe.bypassPlayerTrace = cachedLPBlockTrace;

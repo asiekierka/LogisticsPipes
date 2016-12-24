@@ -16,9 +16,8 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
@@ -43,7 +42,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
 	private final PipeBlockRequestTable _table;
 	private final int orderId;
-	private final RenderItem renderitem = new RenderItem();
+	private final RenderItem renderItem;
 	private int isMouseButtonDown;
 	private int mouseX;
 	private int mouseY;
@@ -62,6 +61,8 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		this.orderId = orderId;
 		guiMapY = -200;
 		Mouse.getDWheel(); // Reset DWheel on GUI open
+
+		renderItem = Minecraft.getMinecraft().getRenderItem();
 	}
 
 	private static void mirror(int[] par0ArrayOfInteger, int width, int height) {
@@ -261,9 +262,9 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		for (int yVar = 0; yVar * 16 < height; yVar++) {
 			for (int xVar = 0; xVar * 16 < width; xVar++) {
-				IIcon icon = Blocks.stone.getIcon(0, 0);
-				mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-				drawTexturedModelRectFromIcon(xVar * 16, yVar * 16, icon, 16, 16);
+				TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/stone");
+				mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+				drawTexturedModalRect(xVar * 16, yVar * 16, icon, 16, 16);
 			}
 		}
 		GL11.glTranslated(0, 0, 600);
@@ -295,10 +296,10 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		String s = Integer.toString(orderId);
 		if (!list.isEmpty()) {
 			drawTexturedModalRect(left - 5, top - 40 + 17, 0, 202, 26, 26);
-			mc.fontRenderer.drawStringWithShadow(s, left + 9 - mc.fontRenderer.getStringWidth(s) / 2, top - 30 + 17, 16777215);
+			mc.fontRendererObj.drawStringWithShadow(s, left + 9 - mc.fontRendererObj.getStringWidth(s) / 2, top - 30 + 17, 16777215);
 		} else {
 			drawTexturedModalRect(left - 5, top - 18 + 17, 0, 202, 26, 26);
-			mc.fontRenderer.drawStringWithShadow(s, left + 9 - mc.fontRenderer.getStringWidth(s) / 2, top - 18 + 10 + 17, 16777215);
+			mc.fontRendererObj.drawStringWithShadow(s, left + 9 - mc.fontRendererObj.getStringWidth(s) / 2, top - 18 + 10 + 17, 16777215);
 		}
 		renderLinkedOrderListItems(list, left, top + 17, 0, 0);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -355,9 +356,9 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		for (int yVar = 0; yVar * 16 - moveBackgroundY < zoom.bottomRenderBorder; yVar++) {
 			for (int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
-				IIcon icon = Blocks.stone.getIcon(0, 0);
-				mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-				drawTexturedModelRectFromIcon(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
+				TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/stone");
+				mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+				drawTexturedModalRect(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
 			}
 		}
 
@@ -385,10 +386,10 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		String s = Integer.toString(orderId);
 		if (!list.isEmpty()) {
 			drawTexturedModalRect(innerLeftSide - mapX + 97, innerTopSide - mapY - 220, 0, 202, 26, 26);
-			mc.fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - mc.fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 210, 16777215);
+			mc.fontRendererObj.drawStringWithShadow(s, innerLeftSide - mapX + 111 - mc.fontRendererObj.getStringWidth(s) / 2, innerTopSide - mapY - 210, 16777215);
 		} else {
 			drawTexturedModalRect(innerLeftSide - mapX + 97, innerTopSide - mapY - 162, 0, 202, 26, 26);
-			mc.fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - mc.fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 152, 16777215);
+			mc.fontRendererObj.drawStringWithShadow(s, innerLeftSide - mapX + 111 - mc.fontRendererObj.getStringWidth(s) / 2, innerTopSide - mapY - 152, 16777215);
 		}
 		renderLinkedOrderListItems(list, innerLeftSide - mapX + 102, innerTopSide - mapY - 180, par1, par2);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -536,15 +537,15 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	}
 
 	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
-		renderitem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), item.makeNormalStack(), x, y);
+		renderItem.renderItemAndEffectIntoGUI(item.makeNormalStack(), x, y);
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
-			renderitem.renderItemOverlayIntoGUI(mc.fontRenderer, mc.renderEngine, item.makeNormalStack(), x, y, "");
+			renderItem.renderItemOverlayIntoGUI(mc.fontRendererObj, item.makeNormalStack(), x, y, "");
 			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			renderitem.zLevel = 0.0F;
+			renderItem.zLevel = 0.0F;
 			// Draw number
-			mc.fontRenderer.drawStringWithShadow(s, x + 17 - mc.fontRenderer.getStringWidth(s), y + 9, 16777215);
+			mc.fontRendererObj.drawStringWithShadow(s, x + 17 - mc.fontRendererObj.getStringWidth(s), y + 9, 16777215);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}
