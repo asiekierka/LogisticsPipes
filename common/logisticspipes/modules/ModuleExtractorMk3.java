@@ -2,11 +2,12 @@ package logisticspipes.modules;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
+
+
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.ResourceLocation;
 
 public class ModuleExtractorMk3 extends ModuleExtractorMk2 {
 
@@ -36,7 +37,7 @@ public class ModuleExtractorMk3 extends ModuleExtractorMk2 {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleExtractorMk3");
+	public ResourceLocation getIcon() {
+		return new ResourceLocation("logisticspipes:itemModule/ModuleExtractorMk3");
 	}
 }

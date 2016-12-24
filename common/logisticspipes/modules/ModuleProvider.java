@@ -8,12 +8,13 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+
+import logisticspipes.utils.DirectionUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+
 
 import net.minecraft.util.EnumFacing;
 
@@ -68,6 +69,7 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import net.minecraft.util.ResourceLocation;
 
 @CCType(name = "Provider Module")
 public class ModuleProvider extends LogisticsSneakyDirectionModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
@@ -82,7 +84,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	protected int currentTick = 0;
 	protected boolean isExcludeFilter = false;
 	protected ExtractionMode _extractionMode = ExtractionMode.Normal;
-	private EnumFacing _sneakyDirection = EnumFacing.UNKNOWN;
+	private EnumFacing _sneakyDirection = null;
 	private boolean isActive = false;
 	private IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
@@ -95,14 +97,14 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
 		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
 		if (nbttagcompound.hasKey("sneakydirection")) {
-			_sneakyDirection = EnumFacing.values()[nbttagcompound.getInteger("sneakydirection")];
+			_sneakyDirection = DirectionUtils.getFacingNullable(nbttagcompound.getInteger("sneakydirection"));
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
 			switch (t) {
 				default:
 				case 0:
-					_sneakyDirection = EnumFacing.UNKNOWN;
+					_sneakyDirection = null;
 					break;
 				case 1:
 					_sneakyDirection = EnumFacing.UP;
@@ -125,7 +127,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);
 		nbttagcompound.setInteger("extractionMode", _extractionMode.ordinal());
 		if (_sneakyDirection != null) {
-			nbttagcompound.setInteger("sneakydirection", _sneakyDirection.ordinal());
+			nbttagcompound.setInteger("sneakydirection", DirectionUtils.ordinalNullable(_sneakyDirection));
 		}
 	}
 
@@ -499,7 +501,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleProvider");
+	public ResourceLocation getIcon() {
+		return new ResourceLocation("logisticspipes:itemModule/ModuleProvider");
 	}
 }

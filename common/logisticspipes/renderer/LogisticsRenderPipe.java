@@ -22,7 +22,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+
 import net.minecraft.util.IntHashMap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.EnumSkyBlock;
@@ -87,19 +87,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		modelSign.signStick.showModel = false;
 
 		LogisticsRenderPipe.config = LogisticsPipes.getClientPlayerConfig();
-		RenderItem customRenderItem = new RenderItem() {
-
-			@Override
-			public boolean shouldBob() {
-				return false;
-			}
-
-			@Override
-			public boolean shouldSpreadItems() {
-				return false;
-			}
-		};
-		customRenderItem.setRenderManager(RenderManager.instance);
+		RenderItem customRenderItem = Minecraft.getMinecraft().getRenderItem(); // TODO - bob/spread disable?
 		itemRenderer.setRenderItem(customRenderItem);
 	}
 

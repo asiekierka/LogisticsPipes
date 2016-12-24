@@ -14,7 +14,7 @@ import logisticspipes.proxy.object3d.interfaces.ITranslation;
 import logisticspipes.proxy.object3d.interfaces.IVec3;
 import logisticspipes.proxy.object3d.operation.LPScale;
 
-import net.minecraft.util.IIcon;
+
 
 public interface ICCLProxy {
 

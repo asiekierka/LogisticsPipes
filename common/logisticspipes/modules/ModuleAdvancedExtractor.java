@@ -32,6 +32,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
+import logisticspipes.utils.DirectionUtils;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
@@ -40,17 +41,18 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+
 
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.ResourceLocation;
 
 @CCType(name = "Advanced Extractor Module")
 public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
@@ -60,7 +62,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Item list", 1);
 	private boolean _itemsIncluded = true;
 
-	private EnumFacing _sneakyDirection = EnumFacing.UNKNOWN;
+	private EnumFacing _sneakyDirection = null;
 
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
 
@@ -90,14 +92,14 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		_filterInventory.readFromNBT(nbttagcompound);
 		setItemsIncluded(nbttagcompound.getBoolean("itemsIncluded"));
 		if (nbttagcompound.hasKey("sneakydirection")) {
-			_sneakyDirection = EnumFacing.values()[nbttagcompound.getInteger("sneakydirection")];
+			_sneakyDirection = DirectionUtils.getFacingNullable(nbttagcompound.getInteger("sneakydirection"));
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
 			switch (t) {
 				default:
 				case 0:
-					_sneakyDirection = EnumFacing.UNKNOWN;
+					_sneakyDirection = null;
 					break;
 				case 1:
 					_sneakyDirection = EnumFacing.UP;
@@ -116,7 +118,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("itemsIncluded", areItemsIncluded());
-		nbttagcompound.setInteger("sneakydirection", _sneakyDirection.ordinal());
+		nbttagcompound.setInteger("sneakydirection", DirectionUtils.ordinalNullable(_sneakyDirection));
 	}
 
 	@Override
@@ -163,7 +165,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		currentTick = 0;
 
 		EnumFacing extractOrientation = _sneakyDirection;
-		if (extractOrientation == EnumFacing.UNKNOWN) {
+		if (extractOrientation == null) {
 			extractOrientation = _service.inventoryOrientation().getOpposite();
 		}
 		IInventoryUtil inventory = _service.getSneakyInventory(extractOrientation, true);
@@ -252,7 +254,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	public List<String> getClientInformation() {
 		List<String> list = new ArrayList<>(5);
 		list.add(areItemsIncluded() ? "Included" : "Excluded");
-		list.add("Extraction: " + ((_sneakyDirection == EnumFacing.UNKNOWN) ? "DEFAULT" : _sneakyDirection.name()));
+		list.add("Extraction: " + ((_sneakyDirection == null) ? "DEFAULT" : _sneakyDirection.name()));
 		list.add("Filter: ");
 		list.add("<inventory>");
 		list.add("<that>");
@@ -326,7 +328,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleAdvancedExtractor");
+	public ResourceLocation getIcon() {
+		return new ResourceLocation("logisticspipes:itemModule/ModuleAdvancedExtractor");
 	}
 }

@@ -4,7 +4,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.texture.IIconRegister;
+
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;

@@ -2,7 +2,7 @@ package logisticspipes.renderer.state;
 
 import java.util.List;
 
-import net.minecraft.util.IIcon;
+
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

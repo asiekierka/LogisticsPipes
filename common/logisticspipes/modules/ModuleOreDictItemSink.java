@@ -32,18 +32,19 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+
 
 import net.minecraftforge.oredict.OreDictionary;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.ResourceLocation;
 
 public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
@@ -138,7 +139,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 				}
 				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(t), 1));
 			} else {
-				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(Item.getItemFromBlock(Blocks.fire), 0, null), 1));
+				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(Item.getItemFromBlock(Blocks.FIRE), 0, null), 1));
 			}
 		}
 	}
@@ -242,7 +243,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleOreDictItemSink");
+	public ResourceLocation getIcon() {
+		return new ResourceLocation("logisticspipes:itemModule/ModuleOreDictItemSink");
 	}
 }

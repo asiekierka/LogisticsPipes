@@ -1,7 +1,7 @@
 package logisticspipes.textures;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
+
+
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
 
-import net.minecraft.util.IIcon;
+
 
 public class LPPipeIconTransformerProvider {
 

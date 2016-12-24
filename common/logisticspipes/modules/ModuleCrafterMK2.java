@@ -2,11 +2,12 @@ package logisticspipes.modules;
 
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
+
+
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.ResourceLocation;
 
 public class ModuleCrafterMK2 extends ModuleCrafter {
 
@@ -18,8 +19,8 @@ public class ModuleCrafterMK2 extends ModuleCrafter {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleCrafterMK2");
+	public ResourceLocation getIcon() {
+		return new ResourceLocation("logisticspipes:itemModule/ModuleCrafterMK2");
 	}
 
 	@Override

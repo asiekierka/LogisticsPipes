@@ -24,29 +24,31 @@ import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.DirectionUtils;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+
 
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.ResourceLocation;
 
 public class ModuleExtractor extends LogisticsSneakyDirectionModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
 
-	private EnumFacing _sneakyDirection = EnumFacing.UNKNOWN;
+	private EnumFacing _sneakyDirection = null;
 
 	private IHUDModuleRenderer HUD = new HUDExtractor(this);
 
@@ -106,14 +108,14 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		if (nbttagcompound.hasKey("sneakydirection")) {
-			_sneakyDirection = EnumFacing.values()[nbttagcompound.getInteger("sneakydirection")];
+			_sneakyDirection = DirectionUtils.getFacingNullable(nbttagcompound.getInteger("sneakydirection"));
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
 			switch (t) {
 				default:
 				case 0:
-					_sneakyDirection = EnumFacing.UNKNOWN;
+					_sneakyDirection = null;
 					break;
 				case 1:
 					_sneakyDirection = EnumFacing.UP;
@@ -130,7 +132,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		nbttagcompound.setInteger("sneakydirection", _sneakyDirection.ordinal());
+		nbttagcompound.setInteger("sneakydirection", DirectionUtils.ordinalNullable(_sneakyDirection));
 	}
 
 	@Override
@@ -146,7 +148,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 			return;
 		}
 		EnumFacing extractOrientation = _sneakyDirection;
-		if (extractOrientation == EnumFacing.UNKNOWN) {
+		if (extractOrientation == null) {
 			extractOrientation = _service.inventoryOrientation().getOpposite();
 		}
 
@@ -206,7 +208,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	@Override
 	public List<String> getClientInformation() {
 		List<String> list = new ArrayList<>(1);
-		list.add("Extraction: " + ((_sneakyDirection == EnumFacing.UNKNOWN) ? "DEFAULT" : _sneakyDirection.name()));
+		list.add("Extraction: " + ((_sneakyDirection == null) ? "DEFAULT" : _sneakyDirection.name()));
 		return list;
 	}
 
@@ -263,7 +265,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleExtractor");
+	public ResourceLocation getIcon() {
+		return new ResourceLocation("logisticspipes:itemModule/ModuleExtractor");
 	}
 }

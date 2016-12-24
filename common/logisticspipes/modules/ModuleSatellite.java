@@ -14,15 +14,16 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
+import net.minecraft.util.ResourceLocation;
 
 //IHUDModuleHandler,
 public class ModuleSatellite extends LogisticsModule {
@@ -125,7 +126,7 @@ public class ModuleSatellite extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
+	public ResourceLocation getIcon() {
 		return null;
 	}
 }

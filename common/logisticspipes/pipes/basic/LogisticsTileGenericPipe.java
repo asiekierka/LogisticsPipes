@@ -188,7 +188,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 		}
 		if (!worldObj.isRemote) {
 			if (deletePipe) {
-				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+				worldObj.setBlockToAir(getPos());
 			}
 
 			if (pipe == null) {
@@ -333,7 +333,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 		 */
 
 		if (pipe != null) {
-			nbt.setInteger("pipeId", Item.itemRegistry.getIDForObject(pipe.item));
+			nbt.setInteger("pipeId", Item.REGISTRY.getIDForObject(pipe.item));
 			pipe.writeToNBT(nbt);
 		} else {
 			nbt.setInteger("pipeId", coreState.pipeId);
@@ -744,7 +744,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	public void afterStateUpdated() {
 		if (pipe == null && coreState.pipeId != 0) {
-			initialize(LogisticsBlockGenericPipe.createPipe((Item) Item.itemRegistry.getObjectById(coreState.pipeId)));
+			initialize(LogisticsBlockGenericPipe.createPipe((Item) Item.REGISTRY.getObjectById(coreState.pipeId)));
 		}
 
 		if (pipe == null) {

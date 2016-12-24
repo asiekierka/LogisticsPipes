@@ -11,17 +11,18 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+
 
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.ResourceLocation;
 
 public class ModuleApiaristRefiller extends LogisticsModule {
 
@@ -98,7 +99,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 
 	private ItemStack extractItem(ISidedInventory inv, boolean remove, EnumFacing dir, int amount) {
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
-			if (inv.getStackInSlot(i) != null && inv.canExtractItem(i, inv.getStackInSlot(i), dir.ordinal())) {
+			if (inv.getStackInSlot(i) != null && inv.canExtractItem(i, inv.getStackInSlot(i), dir)) {
 				if (remove) {
 					return inv.decrStackSize(i, amount);
 				} else {
@@ -113,7 +114,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 
 	private int addItem(ISidedInventory inv, ItemStack stack, EnumFacing dir) {
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
-			if (inv.getStackInSlot(i) == null && inv.canInsertItem(i, stack, dir.ordinal())) {
+			if (inv.getStackInSlot(i) == null && inv.canInsertItem(i, stack, dir)) {
 				inv.setInventorySlotContents(i, stack);
 				return stack.stackSize;
 			}
@@ -182,7 +183,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleApiaristRefiller");
+	public ResourceLocation getIcon() {
+		return new ResourceLocation("logisticspipes:itemModule/ModuleApiaristRefiller");
 	}
 }

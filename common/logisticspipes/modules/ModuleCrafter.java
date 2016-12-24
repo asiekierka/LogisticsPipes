@@ -10,8 +10,9 @@ import java.util.concurrent.DelayQueue;
 import java.util.stream.Collectors;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.texture.IIconRegister;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
@@ -21,7 +22,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.Constants;
@@ -123,6 +125,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
+import net.minecraft.util.ResourceLocation;
 
 public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver {
 
@@ -323,8 +326,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleCrafter");
+	public ResourceLocation getIcon() {
+		return new ResourceLocation("logisticspipes:itemModule/ModuleCrafter");
 	}
 
 	@Override
@@ -1151,9 +1154,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 
 			if (found) {
-				Block block = getWorld().getBlock(adjacent.tileEntity.xCoord, adjacent.tileEntity.yCoord, adjacent.tileEntity.zCoord);
-				if (block != null && block
-						.onBlockActivated(getWorld(), adjacent.tileEntity.xCoord, adjacent.tileEntity.yCoord, adjacent.tileEntity.zCoord, player, 0, 0, 0, 0)) {
+				IBlockState state = getWorld().getBlockState(adjacent.tileEntity.getPos());
+				if (state.getBlock().onBlockActivated(getWorld(), adjacent.tileEntity.getPos(), state, player, EnumHand.MAIN_HAND, player.getHeldItem(EnumHand.MAIN_HAND), adjacent.direction.getOpposite(), 0, 0, 0)) {
 					return true;
 				}
 			}
@@ -1329,7 +1331,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if (adjacent.tileEntity instanceof LogisticsCraftingTableTileEntity) {
 			return extractFromLogisticsCraftingTable((LogisticsCraftingTableTileEntity) adjacent.tileEntity, item, amount, adjacent.direction);
 		} else if (adjacent.tileEntity instanceof net.minecraft.inventory.ISidedInventory) {
-			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) adjacent.tileEntity, EnumFacing.UNKNOWN, true);
+			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) adjacent.tileEntity, null, true);
 			return extractFromIInventory(sidedadapter, item, amount, adjacent.direction);
 		} else if (adjacent.tileEntity instanceof IInventory) {
 			return extractFromIInventory((IInventory) adjacent.tileEntity, item, amount, adjacent.direction);
@@ -1339,7 +1341,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	private ItemStack extractFiltered(AdjacentTileEntity adjacent, ItemIdentifierInventory inv, boolean isExcluded, int filterInvLimit) {
 		if (adjacent.tileEntity instanceof ISidedInventory) {
-			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((ISidedInventory) adjacent.tileEntity, EnumFacing.UNKNOWN, true);
+			IInventory sidedadapter = new SidedInventoryMinecraftAdapter((ISidedInventory) adjacent.tileEntity, null, true);
 			return extractFromIInventoryFiltered(sidedadapter, inv, isExcluded, filterInvLimit, adjacent.direction);
 		} else if (adjacent.tileEntity instanceof IInventory) {
 			return extractFromIInventoryFiltered((IInventory) adjacent.tileEntity, inv, isExcluded, filterInvLimit, adjacent.direction);

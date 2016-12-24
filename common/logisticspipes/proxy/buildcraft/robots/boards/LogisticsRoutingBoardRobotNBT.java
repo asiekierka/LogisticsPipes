@@ -4,11 +4,11 @@ import java.util.List;
 
 import logisticspipes.utils.string.StringUtils;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
+
 import net.minecraft.util.ResourceLocation;
 
 import buildcraft.api.boards.RedstoneBoardRobot;
