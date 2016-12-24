@@ -19,13 +19,12 @@ public class ItemLogisticsChips extends LogisticsItem {
 
 	public static final int MAX_DMG = 6;
 
-	private IIcon[] _icons;
-
 	public ItemLogisticsChips() {
 		setHasSubtypes(true);
 	}
 
-	@Override
+	// TODO: Rendering
+	/* @Override
 	public void registerIcons(IIconRegister iconreg) {
 		_icons = new IIcon[MAX_DMG];
 		for (int i = 0; i < MAX_DMG; i++) {
@@ -36,7 +35,7 @@ public class ItemLogisticsChips extends LogisticsItem {
 	@Override
 	public IIcon getIconFromDamage(int i) {
 		return _icons[i % MAX_DMG];
-	}
+	} */
 
 	@Override
 	public String getUnlocalizedName(ItemStack par1ItemStack) {
@@ -65,7 +64,7 @@ public class ItemLogisticsChips extends LogisticsItem {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabRedstone;
+		return CreativeTabs.REDSTONE;
 	}
 
 	@SuppressWarnings("unchecked")

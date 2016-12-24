@@ -1,58 +1,90 @@
 package logisticspipes.blocks;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.blocks.powertile.LogisticsForgePowerProviderTileEntity;
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.proxy.MainProxy;
 
+import javax.annotation.Nullable;
+
 public class LogisticsSolidBlock extends BlockContainer {
+	public enum Type implements IStringSerializable {
+		SOLDERING_STATION(0),
+		POWER_JUNCTION(1),
+		SECURITY_STATION(2),
+		AUTOCRAFTING_TABLE(3),
+		FUZZYCRAFTING_TABLE(4),
+		STATISTICS_TABLE(5),
+		FU_POWERPROVIDER(11),
+		IC2_POWERPROVIDER(12),
+		BLOCK_FRAME(15);
 
-	public static final int LOGISTICS_BLOCK_FRAME = 15;
+		private static final Type[] byMeta = new Type[16];
+		private final int meta;
 
-	public static final int SOLDERING_STATION = 0;
-	public static final int LOGISTICS_POWER_JUNCTION = 1;
-	public static final int LOGISTICS_SECURITY_STATION = 2;
-	public static final int LOGISTICS_AUTOCRAFTING_TABLE = 3;
-	public static final int LOGISTICS_FUZZYCRAFTING_TABLE = 4;
-	public static final int LOGISTICS_STATISTICS_TABLE = 5;
+		Type(int meta) {
+			this.meta = meta;
+			setMeta(meta);
+		}
 
-	//Power Provider
-	public static final int LOGISTICS_RF_POWERPROVIDER = 11;
-	public static final int LOGISTICS_IC2_POWERPROVIDER = 12;
+		private void setMeta(int meta) {
+			byMeta[meta] = this;
+		}
 
-	private static final IIcon[] icons = new IIcon[18];
-	private static final IIcon[] newTextures = new IIcon[10];
+		public int meta() {
+			return meta;
+		}
+
+		public static Type byMeta(int meta) {
+			return byMeta[meta];
+		}
+
+		@Override
+		public String getName() {
+			return name().toLowerCase();
+		}
+	}
+
+	public static final PropertyEnum<Type> TYPE = PropertyEnum.create("type", Type.class);
 
 	@Override
-	public boolean isOpaqueCube() {
+	public EnumBlockRenderType getRenderType(IBlockState state) {
+		return EnumBlockRenderType.MODEL;
+	}
+
+	@Override
+	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
 	@Override
-	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, EnumFacing side) {
+	public boolean isSideSolid(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
 		return true;
 	}
 
@@ -63,26 +95,26 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockClicked(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer) {
-		super.onBlockClicked(par1World, par2, par3, par4, par5EntityPlayer);
+	public void onBlockClicked(World par1World, BlockPos pos, EntityPlayer par5EntityPlayer) {
+		super.onBlockClicked(par1World, pos, par5EntityPlayer);
 	}
 
 	@Override
-	public void onNeighborChange(IBlockAccess world, int x, int y, int z, int tileX, int tileY, int tileZ) {
-		super.onNeighborChange(world, x, y, z, tileX, tileY, tileZ);
-		TileEntity tile = world.getTileEntity(x, y, z);
+	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighborPos) {
+		super.onNeighborChange(world, pos, neighborPos);
+		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof LogisticsSolidTileEntity) {
 			((LogisticsSolidTileEntity) tile).notifyOfBlockChange();
 		}
 	}
 
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
-		if (!par5EntityPlayer.isSneaking()) {
-			TileEntity tile = par1World.getTileEntity(par2, par3, par4);
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+		if (!playerIn.isSneaking()) {
+			TileEntity tile = worldIn.getTileEntity(pos);
 			if (tile instanceof IGuiTileEntity) {
-				if (MainProxy.isServer(par5EntityPlayer.worldObj)) {
-					((IGuiTileEntity) tile).getGuiProvider().setTilePos(tile).open(par5EntityPlayer);
+				if (MainProxy.isServer(playerIn.worldObj)) {
+					((IGuiTileEntity) tile).getGuiProvider().setTilePos(tile).open(playerIn);
 				}
 				return true;
 			}
@@ -91,9 +123,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, int posX, int posY, int posZ, EntityLivingBase entity, ItemStack itemStack) {
-		super.onBlockPlacedBy(world, posX, posY, posZ, entity, itemStack);
-		TileEntity tile = world.getTileEntity(posX, posY, posZ);
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack itemStack) {
+		super.onBlockPlacedBy(world, pos, state, entity, itemStack);
+		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof LogisticsCraftingTableTileEntity) {
 			((LogisticsCraftingTableTileEntity) tile).placedBy(entity);
 		}
@@ -120,44 +152,34 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public void breakBlock(World par1World, int par2, int par3, int par4, Block par5, int par6) {
-		TileEntity tile = par1World.getTileEntity(par2, par3, par4);
+	public void breakBlock(World par1World, BlockPos pos, IBlockState state) {
+		TileEntity tile = par1World.getTileEntity(pos);
 		if (tile instanceof LogisticsSolderingTileEntity) {
 			((LogisticsSolderingTileEntity) tile).onBlockBreak();
 		}
 		if (tile instanceof LogisticsCraftingTableTileEntity) {
 			((LogisticsCraftingTableTileEntity) tile).onBlockBreak();
 		}
-		super.breakBlock(par1World, par2, par3, par4, par5, par6);
-	}
-
-	@Override
-	public int getRenderType() {
-		return LPConstants.solidBlockModel;
-	}
-
-	@Override
-	public IIcon getIcon(int side, int meta) {
-		return getRotatedTexture(meta, side, 2, 0);
+		super.breakBlock(par1World, pos, state);
 	}
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int metadata) {
-		switch (metadata) {
+		switch (getStateFromMeta(metadata).getValue(TYPE)) {
 			case SOLDERING_STATION:
 				return new LogisticsSolderingTileEntity();
-			case LOGISTICS_POWER_JUNCTION:
+			case POWER_JUNCTION:
 				return new LogisticsPowerJunctionTileEntity();
-			case LOGISTICS_SECURITY_STATION:
+			case SECURITY_STATION:
 				return new LogisticsSecurityTileEntity();
-			case LOGISTICS_AUTOCRAFTING_TABLE:
-			case LOGISTICS_FUZZYCRAFTING_TABLE:
+			case AUTOCRAFTING_TABLE:
+			case FUZZYCRAFTING_TABLE:
 				return new LogisticsCraftingTableTileEntity();
-			case LOGISTICS_STATISTICS_TABLE:
+			case STATISTICS_TABLE:
 				return new LogisticsStatisticsTileEntity();
-			case LOGISTICS_RF_POWERPROVIDER:
-				return new LogisticsRFPowerProviderTileEntity();
-			case LOGISTICS_IC2_POWERPROVIDER:
+			case FU_POWERPROVIDER:
+				return new LogisticsForgePowerProviderTileEntity();
+			case IC2_POWERPROVIDER:
 				return new LogisticsIC2PowerProviderTileEntity();
 			default:
 				return null;
@@ -165,23 +187,26 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public int damageDropped(int par1) {
-		switch (par1) {
-			case SOLDERING_STATION:
-			case LOGISTICS_POWER_JUNCTION:
-			case LOGISTICS_SECURITY_STATION:
-			case LOGISTICS_AUTOCRAFTING_TABLE:
-			case LOGISTICS_FUZZYCRAFTING_TABLE:
-			case LOGISTICS_STATISTICS_TABLE:
-			case LOGISTICS_RF_POWERPROVIDER:
-			case LOGISTICS_IC2_POWERPROVIDER:
-			case LOGISTICS_BLOCK_FRAME:
-				return par1;
-		}
-		return super.damageDropped(par1);
+	public int damageDropped(IBlockState state) {
+		return getMetaFromState(state);
 	}
 
 	@Override
+	public int getMetaFromState(IBlockState state) {
+		return state.getValue(TYPE).meta();
+	}
+
+	@Override
+	public IBlockState getStateFromMeta(int meta) {
+		return getDefaultState().withProperty(TYPE, Type.byMeta(meta));
+	}
+
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, TYPE);
+	}
+
+	/* @Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(IBlockAccess access, int x, int y, int z, int side) {
 		int meta = access.getBlockMetadata(x, y, z);
@@ -375,5 +400,5 @@ public class LogisticsSolidBlock extends BlockContainer {
 			default:
 				return LogisticsSolidBlock.newTextures[0];
 		}
-	}
+	} */
 }

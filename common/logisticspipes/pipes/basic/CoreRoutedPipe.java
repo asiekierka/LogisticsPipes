@@ -602,7 +602,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return getRoutedTexture(connection);
 		} else {
 			TextureType texture = getNonRoutedTexture(connection);
-			if (this.getUpgradeManager().hasRFPowerSupplierUpgrade() || this.getUpgradeManager().getIC2PowerLevel() > 0) {
+			if (this.getUpgradeManager().hasFUPowerSupplierUpgrade() || this.getUpgradeManager().getIC2PowerLevel() > 0) {
 				if (texture.fileName.equals(Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE.fileName)) {
 					texture = Textures.LOGISTICSPIPE_NOTROUTED_POWERED_TEXTURE;
 				} else if (texture.fileName.equals(Textures.LOGISTICSPIPE_LIQUID_TEXTURE.fileName)) {
@@ -1465,7 +1465,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	public void handleRFPowerArival(double toSend) {
-		powerHandler.addRFPower(toSend);
+		powerHandler.addFUPower(toSend);
 	}
 
 	public void handleIC2PowerArival(double toSend) {

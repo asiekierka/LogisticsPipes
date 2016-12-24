@@ -417,7 +417,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	}
 
 	@Override
-	public boolean hasRFPowerSupplierUpgrade() {
+	public boolean hasFUPowerSupplierUpgrade() {
 		return hasRFPowerUpgrade;
 	}
 

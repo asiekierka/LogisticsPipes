@@ -21,6 +21,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -30,8 +33,7 @@ import org.lwjgl.input.Keyboard;
 
 public class RemoteOrderer extends Item {
 
-	final static IIcon[] _icons = new IIcon[17];
-
+	/*
 	@Override
 	public void registerIcons(IIconRegister par1IIconRegister) {
 		for (int i = 0; i < 17; i++) {
@@ -40,16 +42,18 @@ public class RemoteOrderer extends Item {
 	}
 
 	@Override
-	public boolean getShareTag() {
-		return true;
-	}
-
-	@Override
 	public IIcon getIconFromDamage(int par1) {
 		if (par1 > 16) {
 			par1 = 0;
 		}
 		return RemoteOrderer._icons[par1];
+	}
+	*/
+	// TODO: Rendering
+
+	@Override
+	public boolean getShareTag() {
+		return true;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -70,12 +74,12 @@ public class RemoteOrderer extends Item {
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
+	public ActionResult<ItemStack> onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer, EnumHand hand) {
 		if (par1ItemStack == null) {
-			return null;
+			return new ActionResult<>(EnumActionResult.PASS, par1ItemStack);
 		}
 		if (!par1ItemStack.hasTagCompound()) {
-			return par1ItemStack;
+			return new ActionResult<>(EnumActionResult.PASS, par1ItemStack);
 		}
 		PipeItemsRemoteOrdererLogistics pipe = RemoteOrderer.getPipe(par1ItemStack);
 		if (pipe != null) {
@@ -92,7 +96,7 @@ public class RemoteOrderer extends Item {
 				}
 			}
 		}
-		return par1ItemStack;
+		return new ActionResult<>(EnumActionResult.SUCCESS, par1ItemStack);
 	}
 
 	public static void connectToPipe(ItemStack stack, PipeItemsRemoteOrdererLogistics pipe) {

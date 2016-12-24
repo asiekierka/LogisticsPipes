@@ -31,7 +31,6 @@ import net.minecraft.util.EnumFacing;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IInventoryUtil;
@@ -57,7 +56,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
@@ -651,7 +649,7 @@ public class PipeTransportLogistics {
 			}
 			if (SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile) || SimpleServiceLocator.factorizationProxy.isBarral(tile)
 					|| SimpleServiceLocator.enderIOProxy.isItemConduit(tile, side.getOpposite())
-					|| (getPipe().getUpgradeManager().hasRFPowerSupplierUpgrade() && SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(tile)) || (getPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile))) {
+					|| (getPipe().getUpgradeManager().hasFUPowerSupplierUpgrade() && SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(tile)) || (getPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile))) {
 				return true;
 			}
 			if (tile instanceof ISidedInventory) {

@@ -243,12 +243,6 @@ public final class SimpleServiceLocator {
 		SimpleServiceLocator.extraCellsProxy = proxy;
 	}
 
-	public static ICoFHPowerProxy cofhPowerProxy;
-
-	public static void setCoFHPowerProxy(ICoFHPowerProxy proxy) {
-		SimpleServiceLocator.cofhPowerProxy = proxy;
-	}
-
 	public static ITDProxy thermalDynamicsProxy;
 
 	public static void setThermalDynamicsProxy(ITDProxy proxy) {

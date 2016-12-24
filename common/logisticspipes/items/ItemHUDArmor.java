@@ -11,9 +11,11 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
+import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.ISpecialArmor;
@@ -21,7 +23,7 @@ import net.minecraftforge.common.ISpecialArmor;
 public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor {
 
 	public ItemHUDArmor(int renderIndex) {
-		super(ArmorMaterial.CHAIN, renderIndex, 0);
+		super(ArmorMaterial.CHAIN, renderIndex, EntityEquipmentSlot.HEAD);
 	}
 
 	@Override
@@ -45,21 +47,21 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-		if (MainProxy.isClient(world)) {
-			return stack;
+	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand) {
+		if (!MainProxy.isClient(worldIn)) {
+			useItem(playerIn, worldIn);
 		}
-		useItem(player, world);
-		return stack.copy();
+		return ActionResult.newResult(EnumActionResult.SUCCESS, itemStackIn.copy());
 	}
 
 	@Override
-	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
 		useItem(player, world);
+		// TODO: Is this right?
 		if (MainProxy.isClient(world)) {
-			return false;
+			return EnumActionResult.PASS;
 		}
-		return true;
+		return EnumActionResult.SUCCESS;
 	}
 
 	private void useItem(EntityPlayer player, World world) {
@@ -71,19 +73,20 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 		return new CreativeTabs[] { getCreativeTab(), LogisticsPipes.LPCreativeTab };
 	}
 
-	@Override
+	// TODO: Rendering
+	/* @Override
 	public void registerIcons(IIconRegister par1IIconRegister) {
 		itemIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", ""));
 	}
 
 	@Override
-	public boolean isEnabled(ItemStack item) {
-		return true;
-	}
-
-	@Override
 	public String getArmorTexture(ItemStack stack, Entity entity, int slot, String type) {
 		return "logisticspipes:textures/armor/LogisticsHUD_1.png";
+	} */
+
+	@Override
+	public boolean isEnabled(ItemStack item) {
+		return true;
 	}
 
 	@Override

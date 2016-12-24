@@ -107,7 +107,6 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int MAX_CRAFTING_CLEANUP = 4;
 
 	List<Upgrade> upgrades = new ArrayList<>();
-	private IIcon[] icons;
 
 	private class Upgrade {
 
@@ -240,7 +239,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabRedstone;
+		return CreativeTabs.REDSTONE;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -298,7 +297,8 @@ public class ItemUpgrade extends LogisticsItem {
 		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
 
-	@Override
+	// TODO: Rendering
+	/* @Override
 	public void registerIcons(IIconRegister par1IIconRegister) {
 		icons = new IIcon[34];
 		icons[0] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
@@ -352,7 +352,7 @@ public class ItemUpgrade extends LogisticsItem {
 			}
 		}
 		return icons[0];
-	}
+	} */
 
 	public static String SHIFT_INFO_PREFIX = "item.upgrade.info.";
 

@@ -24,24 +24,24 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		switch (stack.getItemDamage()) {
-			case LogisticsSolidBlock.SOLDERING_STATION:
+		switch (LogisticsSolidBlock.Type.byMeta(stack.getItemDamage())) {
+			case SOLDERING_STATION:
 				return "tile.solderingstation";
-			case LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION:
+			case POWER_JUNCTION:
 				return "tile.logisticspowerjunction";
-			case LogisticsSolidBlock.LOGISTICS_SECURITY_STATION:
+			case SECURITY_STATION:
 				return "tile.logisticssecuritystation";
-			case LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE:
+			case AUTOCRAFTING_TABLE:
 				return "tile.logisticscraftingtable";
-			case LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE:
+			case FUZZYCRAFTING_TABLE:
 				return "tile.logisticsfuzzycraftingtable";
-			case LogisticsSolidBlock.LOGISTICS_STATISTICS_TABLE:
+			case STATISTICS_TABLE:
 				return "tile.logisticsstatisticstable";
-			case LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER:
-				return "tile.logisticstepowerprovider";
-			case LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER:
+			case FU_POWERPROVIDER:
+				return "tile.logisticsforgepowerprovider";
+			case IC2_POWERPROVIDER:
 				return "tile.logisticsic2powerprovider";
-			case LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME:
+			case BLOCK_FRAME:
 				return "tile.logisticsblankblock";
 		}
 		return super.getUnlocalizedName(stack);
@@ -65,21 +65,16 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.SOLDERING_STATION));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_SECURITY_STATION));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_STATISTICS_TABLE));
-		if (SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
-			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER));
-		}
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.Type.BLOCK_FRAME.meta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.Type.SOLDERING_STATION.meta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.Type.POWER_JUNCTION.meta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.Type.SECURITY_STATION.meta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.Type.AUTOCRAFTING_TABLE.meta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.Type.FUZZYCRAFTING_TABLE.meta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.Type.STATISTICS_TABLE.meta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.Type.FU_POWERPROVIDER.meta()));
 		if (SimpleServiceLocator.IC2Proxy.hasIC2()) {
-			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER));
+			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.Type.IC2_POWERPROVIDER.meta()));
 		}
 	}
-
-	@Override
-	public void registerIcons(IIconRegister par1IIconRegister) {}
 }

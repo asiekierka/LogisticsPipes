@@ -67,10 +67,10 @@ public class TextureMatrix {
 				}
 				isSubPowerInDir[i] = cPipe.getRouter().isSubPoweredExit(EnumFacing.getOrientation(i));
 			}
-			if (hasPowerUpgrade != (cPipe.getUpgradeManager().hasRFPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0)) {
+			if (hasPowerUpgrade != (cPipe.getUpgradeManager().hasFUPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0)) {
 				dirty = true;
 			}
-			hasPowerUpgrade = cPipe.getUpgradeManager().hasRFPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0;
+			hasPowerUpgrade = cPipe.getUpgradeManager().hasFUPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0;
 			if (hasPower != (cPipe._textureBufferPowered || Configs.LOGISTICS_POWER_USAGE_DISABLED)) {
 				dirty = true;
 			}

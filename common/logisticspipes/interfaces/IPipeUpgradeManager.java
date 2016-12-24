@@ -6,7 +6,7 @@ public interface IPipeUpgradeManager {
 
 	boolean hasPowerPassUpgrade();
 
-	boolean hasRFPowerSupplierUpgrade();
+	boolean hasFUPowerSupplierUpgrade();
 
 	int getIC2PowerLevel();
 

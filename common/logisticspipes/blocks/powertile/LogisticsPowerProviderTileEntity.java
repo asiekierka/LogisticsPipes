@@ -46,7 +46,6 @@ import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
 
@@ -276,26 +275,6 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
-	public int getX() {
-		return xCoord;
-	}
-
-	@Override
-	public int getY() {
-		return yCoord;
-	}
-
-	@Override
-	public int getZ() {
-		return zCoord;
-	}
-
-	@Override
-	public World getWorld() {
-		return getWorld();
-	}
-
-	@Override
 	public void startWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartBlockWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
@@ -318,7 +297,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	@Override
 	public boolean isHUDExistent() {
-		return getWorld().getTileEntity(xCoord, yCoord, zCoord) == this;
+		return getWorld().getTileEntity(getPos()) == this;
 	}
 
 	@Override

@@ -10,13 +10,11 @@ import net.minecraft.item.ItemStack;
 
 public class ItemParts extends LogisticsItem {
 
-	private IIcon[] _icons;
-
 	public ItemParts() {
 		setHasSubtypes(true);
 	}
 
-	@Override
+	/* @Override
 	public void registerIcons(IIconRegister iconreg) {
 		_icons = new IIcon[4];
 		for (int i = 0; i < 4; i++) {
@@ -27,7 +25,8 @@ public class ItemParts extends LogisticsItem {
 	@Override
 	public IIcon getIconFromDamage(int par1) {
 		return _icons[par1 % 4];
-	}
+	} */
+	// TODO: Rendering
 
 	@Override
 	public String getUnlocalizedName(ItemStack par1ItemStack) {
@@ -46,7 +45,7 @@ public class ItemParts extends LogisticsItem {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabRedstone;
+		return CreativeTabs.REDSTONE;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

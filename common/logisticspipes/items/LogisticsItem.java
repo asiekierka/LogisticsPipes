@@ -24,18 +24,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LogisticsItem extends Item {
-
-	public LogisticsItem() {}
-
-	public LogisticsItem(IIcon icon) {
-		itemIcon = icon;
+	public LogisticsItem() {
 		setCreativeTab(LogisticsPipes.LPCreativeTab);
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IIconRegister) {
-		itemIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", ""));
 	}
 
 	@Override

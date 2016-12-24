@@ -328,7 +328,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 
 			@Override
-			public boolean hasRFPowerSupplierUpgrade() {
+			public boolean hasFUPowerSupplierUpgrade() {
 				return false;
 			}
 

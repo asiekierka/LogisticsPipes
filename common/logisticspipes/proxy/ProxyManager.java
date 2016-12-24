@@ -356,31 +356,7 @@ public class ProxyManager {
 			@Override public boolean isWrench(Item item) {return false;}
 		}));
 
-		SimpleServiceLocator.setExtraCellsProxy(ProxyManager.getWrappedProxy("extracells", IExtraCellsProxy.class, ExtraCellsProxy.class, fluid-> true));
-
-		SimpleServiceLocator.setCoFHPowerProxy(ProxyManager.getWrappedProxy("CoFHAPI|energy", ICoFHPowerProxy.class, CoFHPowerProxy.class, new ICoFHPowerProxy() {
-			@Override public boolean isEnergyReceiver(TileEntity tile) {return false;}
-			@Override public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile) {
-				return new ICoFHEnergyReceiver() {
-					@Override public int getMaxEnergyStored(EnumFacing opposite) {return 0;}
-					@Override public int getEnergyStored(EnumFacing opposite) {return 0;}
-					@Override public boolean canConnectEnergy(EnumFacing opposite) {return false;}
-					@Override public int receiveEnergy(EnumFacing opposite, int i, boolean b) {return 0;}
-				};
-			}
-			@Override public void addCraftingRecipes(CraftingParts parts) {}
-			@Override public ICoFHEnergyStorage getEnergyStorage(int i) {
-				return new ICoFHEnergyStorage() {
-					@Override public int extractEnergy(int space, boolean b) {return 0;}
-					@Override public int receiveEnergy(int maxReceive, boolean simulate) {return 0;}
-					@Override public int getEnergyStored() {return 0;}
-					@Override public int getMaxEnergyStored() {return 0;}
-					@Override public void readFromNBT(NBTTagCompound nbt) {}
-					@Override public void writeToNBT(NBTTagCompound nbt) {}
-				};
-			}
-			@Override public boolean isAvailable() {return false;}
-		}, ICoFHEnergyReceiver.class, ICoFHEnergyStorage.class));
+		SimpleServiceLocator.setExtraCellsProxy(fluid -> true);
 
 		SimpleServiceLocator.setThermalDynamicsProxy(ProxyManager.getWrappedProxy("ThermalDynamics", ITDProxy.class, ThermalDynamicsProxy.class, new ITDProxy() {
 			@Override public ITDPart getTDPart(final LogisticsTileGenericPipe pipe) {
