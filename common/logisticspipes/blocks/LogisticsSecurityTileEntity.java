@@ -40,10 +40,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implements IGuiOpenControler, ISecurityProvider, IGuiTileEntity {
 
@@ -99,9 +99,9 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC ? 1 : 0).setPos(getPos()), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setPos(getPos()), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setPos(getPos()), player);
 		SimpleServiceLocator.securityStationManager.sendClientAuthorizationList();
 		listener.add(player);
 	}
@@ -161,7 +161,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 		list = par1nbtTagCompound.getTagList("excludedCC", 3);
 		while (list.tagCount() > 0) {
 			NBTBase base = list.removeTag(0);
-			excludedCC.add(((NBTTagInt) base).func_150287_d());
+			excludedCC.add(((NBTTagInt) base).getInt());
 		}
 	}
 
@@ -199,7 +199,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 				break;
 			case 2: //+
 				if (!useEnergy(10)) {
-					player.addChatComponentMessage(new ChatComponentTranslation("lp.misc.noenergy"));
+					player.addChatComponentMessage(new TextComponentTranslation("lp.misc.noenergy"));
 					return;
 				}
 				if (inv.getStackInSlot(0) == null) {
@@ -219,7 +219,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 				break;
 			case 3: //++
 				if (!useEnergy(640)) {
-					player.addChatComponentMessage(new ChatComponentTranslation("lp.misc.noenergy"));
+					player.addChatComponentMessage(new TextComponentTranslation("lp.misc.noenergy"));
 					return;
 				}
 				ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 64, LogisticsItemCard.SEC_CARD);
@@ -255,26 +255,26 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 			return LogisticsSecurityTileEntity.allowAll;
 		}
 		if (usePower && !useEnergy(10)) {
-			entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.misc.noenergy"));
+			entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.misc.noenergy"));
 			return new SecuritySettings("No Energy");
 		}
 		SecuritySettings setting = settingsList.get(entityplayer.getDisplayName());
 		//TODO Change to GameProfile based Authentication
 		if (setting == null) {
-			setting = new SecuritySettings(entityplayer.getDisplayName());
-			settingsList.put(entityplayer.getDisplayName(), setting);
+			setting = new SecuritySettings(entityplayer.getDisplayName().getUnformattedText());
+			settingsList.put(entityplayer.getDisplayName().getUnformattedText(), setting);
 		}
 		return setting;
 	}
 
 	public void changeCC() {
 		allowCC = !allowCC;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC ? 1 : 0).setPos(getPos()), listener);
 	}
 
 	public void changeDestroy() {
 		allowAutoDestroy = !allowAutoDestroy;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setPos(getPos()), listener);
 	}
 
 	public void addCCToList(Integer id) {
@@ -295,7 +295,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 			list.appendTag(new NBTTagInt(i));
 		}
 		tag.setTag("list", list);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPos(getPos()), player);
 	}
 
 	public void handleListPacket(NBTTagCompound tag) {
@@ -303,7 +303,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 		NBTTagList list = tag.getTagList("list", 3);
 		while (list.tagCount() > 0) {
 			NBTBase base = list.removeTag(0);
-			excludedCC.add(((NBTTagInt) base).func_150287_d());
+			excludedCC.add(((NBTTagInt) base).getInt());
 		}
 	}
 
@@ -325,7 +325,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 
 	private boolean useEnergy(int amount) {
 		for (int i = 0; i < 4; i++) {
-			TileEntity tile = OrientationsUtil.getTileNextToThis(this, ForgeDirection.VALID_DIRECTIONS[i + 2]);
+			TileEntity tile = OrientationsUtil.getTileNextToThis(this, EnumFacing.VALUES[i + 2]);
 			if (tile instanceof IRoutedPowerProvider) {
 				if (((IRoutedPowerProvider) tile).useEnergy(amount)) {
 					return true;
@@ -343,13 +343,13 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	}
 
 	@Override
-	public void func_145828_a(CrashReportCategory par1CrashReportCategory) {
-		super.func_145828_a(par1CrashReportCategory);
+	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
+		super.addInfoToCrashReport(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 
 	public World getWorld() {
-		return getWorldObj();
+		return getWorld();
 	}
 
 	@Override

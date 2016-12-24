@@ -34,7 +34,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
@@ -44,13 +44,13 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		super(new PipeTransportLogistics(true) {
 
 			@Override
-			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
+			public boolean canPipeConnect(TileEntity tile, EnumFacing dir) {
 				if (super.canPipeConnect(tile, dir)) {
 					return true;
 				}
 				if (tile instanceof LogisticsSecurityTileEntity) {
-					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
-					if (ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
+					EnumFacing ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
+					if (ori == null || ori == EnumFacing.UNKNOWN || ori == EnumFacing.DOWN || ori == EnumFacing.UP) {
 						return false;
 					}
 					return true;
@@ -63,7 +63,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(EnumFacing connection) {
 		if (isSecurityProvider(connection)) {
 			return Textures.LOGISTICSPIPE_SECURITY_TEXTURE;
 		}
@@ -71,14 +71,14 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public boolean isLockedExit(ForgeDirection orientation) {
+	public boolean isLockedExit(EnumFacing orientation) {
 		if (isPowerJunction(orientation) || isSecurityProvider(orientation)) {
 			return true;
 		}
 		return super.isLockedExit(orientation);
 	}
 
-	private boolean isPowerJunction(ForgeDirection ori) {
+	private boolean isPowerJunction(EnumFacing ori) {
 		TileEntity tilePipe = container.getTile(ori);
 		if (tilePipe == null || !container.canPipeConnect(tilePipe, ori)) {
 			return false;
@@ -90,7 +90,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		return false;
 	}
 
-	private boolean isSecurityProvider(ForgeDirection ori) {
+	private boolean isSecurityProvider(EnumFacing ori) {
 		TileEntity tilePipe = container.getTile(ori);
 		if (tilePipe == null || !container.canPipeConnect(tilePipe, ori)) {
 			return false;
@@ -126,12 +126,12 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	public IInventoryUtil getPointedInventory(boolean forExtraction) {
 		IInventoryUtil inv = super.getPointedInventory(forExtraction);
 		if (inv == null) {
-			Optional<Pair<IInventory, ForgeDirection>> first = new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+			Optional<Pair<IInventory, EnumFacing>> first = new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
 					.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
 					.map(adjacentInventory -> new Pair<>(InventoryHelper.getInventory((IInventory) adjacentInventory.tileEntity), adjacentInventory.direction))
 					.filter(inventoryDirectionPair -> inventoryDirectionPair.getValue1() != null).findFirst();
 			if (first.isPresent()) {
-				Pair<IInventory, ForgeDirection> p = first.get();
+				Pair<IInventory, EnumFacing> p = first.get();
 				inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(p.getValue1(), p.getValue2().getOpposite());
 			}
 		}

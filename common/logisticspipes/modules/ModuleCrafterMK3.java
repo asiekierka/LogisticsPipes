@@ -32,10 +32,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
@@ -137,7 +137,7 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 				if (slot == null) {
 					continue;
 				}
-				ForgeDirection insertion = adjacent.direction.getOpposite();
+				EnumFacing insertion = adjacent.direction.getOpposite();
 				if (getUpgradeManager().hasSneakyUpgrade()) {
 					insertion = getUpgradeManager().getSneakyOrientation();
 				}

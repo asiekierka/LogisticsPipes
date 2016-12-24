@@ -2,7 +2,7 @@ package logisticspipes.network.guis.module.inpipe;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +19,7 @@ public class ExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 
 	@Getter
 	@Setter
-	private ForgeDirection sneakyOrientation;
+	private EnumFacing sneakyOrientation;
 
 	public ExtractorModuleSlot(int id) {
 		super(id);
@@ -28,13 +28,13 @@ public class ExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
-		output.writeForgeDirection(sneakyOrientation);
+		output.writeEnumFacing(sneakyOrientation);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-		sneakyOrientation = input.readForgeDirection();
+		sneakyOrientation = input.readEnumFacing();
 	}
 
 	@Override

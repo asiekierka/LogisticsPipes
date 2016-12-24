@@ -19,9 +19,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.math.ChunkPos;
 
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -32,13 +32,13 @@ import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
 import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
 import net.minecraftforge.event.world.WorldEvent;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,14 +68,14 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 public class LogisticsEventListener {
 
 	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<>();
-	public static Map<ChunkCoordIntPair, PlayerCollectionList> watcherList = new ConcurrentHashMap<>();
+	public static Map<ChunkPos, PlayerCollectionList> watcherList = new ConcurrentHashMap<>();
 	int taskCount = 0;
 	public static Map<PlayerIdentifier, PlayerConfig> playerConfigs = new HashMap<>();
 
 	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
-		if (event != null && event.entity instanceof EntityItem && event.entity.worldObj != null && !event.entity.worldObj.isRemote) {
-			ItemStack stack = ((EntityItem) event.entity).getEntityItem(); //Get ItemStack
+		if (event != null && event.getEntity() instanceof EntityItem && event.getEntity().worldObj != null && !event.getEntity().worldObj.isRemote) {
+			ItemStack stack = ((EntityItem) event.getEntity()).getEntityItem(); //Get ItemStack
 			if (stack != null && stack.getItem() instanceof IItemAdvancedExistance && !((IItemAdvancedExistance) stack.getItem()).canExistInWorld(stack)) {
 				event.setCanceled(true);
 			}
@@ -98,16 +98,16 @@ public class LogisticsEventListener {
 
 	@SubscribeEvent
 	public void onPlayerInteract(final PlayerInteractEvent event) {
-		if (MainProxy.isServer(event.entityPlayer.worldObj)) {
+		if (MainProxy.isServer(event.getEntityPlayer().worldObj)) {
 			if (event.action == Action.LEFT_CLICK_BLOCK) {
-				final TileEntity tile = event.entityPlayer.worldObj.getTileEntity(event.x, event.y, event.z);
+				final TileEntity tile = event.getEntityPlayer().worldObj.getTileEntity(event.x, event.y, event.z);
 				if (tile instanceof LogisticsTileGenericPipe) {
 					if (((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
-						if (!((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).canBeDestroyedByPlayer(event.entityPlayer)) {
+						if (!((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).canBeDestroyedByPlayer(event.getEntityPlayer())) {
 							event.setCanceled(true);
-							event.entityPlayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+							event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 							((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
-							event.entityPlayer.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
+							event.getEntityPlayer().worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
 							((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).delayTo = System.currentTimeMillis() + 200;
 							((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).repeatFor = 10;
 						} else {
@@ -117,7 +117,7 @@ public class LogisticsEventListener {
 				}
 			}
 			if (event.action == Action.RIGHT_CLICK_BLOCK) {
-				WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.entityPlayer.worldObj, event.x, event.y, event.z);
+				WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().worldObj, event.x, event.y, event.z);
 				TileEntity tileEntity = worldCoordinates.getTileEntity();
 				if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
 					//@formatter:off
@@ -134,7 +134,7 @@ public class LogisticsEventListener {
 					//@formatter:on
 
 					if (!list.isEmpty()) {
-						LogisticsEventListener.chestQuickSortConnection.put(event.entityPlayer, list);
+						LogisticsEventListener.chestQuickSortConnection.put(event.getEntityPlayer(), list);
 					}
 				}
 			}
@@ -145,13 +145,13 @@ public class LogisticsEventListener {
 
 	@SubscribeEvent
 	public void WorldLoad(WorldEvent.Load event) {
-		if (MainProxy.isServer(event.world)) {
-			int dim = MainProxy.getDimensionForWorld(event.world);
+		if (MainProxy.isServer(event.getWorld())) {
+			int dim = MainProxy.getDimensionForWorld(event.getWorld());
 			if (!LogisticsEventListener.WorldLoadTime.containsKey(dim)) {
 				LogisticsEventListener.WorldLoadTime.put(dim, System.currentTimeMillis());
 			}
 		}
-		if (MainProxy.isClient(event.world)) {
+		if (MainProxy.isClient(event.getWorld())) {
 			SimpleServiceLocator.routerManager.clearClientRouters();
 			LogisticsHUDRenderer.instance().clear();
 		}
@@ -159,24 +159,24 @@ public class LogisticsEventListener {
 
 	@SubscribeEvent
 	public void WorldUnload(WorldEvent.Unload event) {
-		if (MainProxy.isServer(event.world)) {
-			int dim = MainProxy.getDimensionForWorld(event.world);
+		if (MainProxy.isServer(event.getWorld())) {
+			int dim = MainProxy.getDimensionForWorld(event.getWorld());
 			SimpleServiceLocator.routerManager.dimensionUnloaded(dim);
 		}
 	}
 
 	@SubscribeEvent
 	public void watchChunk(Watch event) {
-		if (!LogisticsEventListener.watcherList.containsKey(event.chunk)) {
-			LogisticsEventListener.watcherList.put(event.chunk, new PlayerCollectionList());
+		if (!LogisticsEventListener.watcherList.containsKey(event.getChunk())) {
+			LogisticsEventListener.watcherList.put(event.getChunk(), new PlayerCollectionList());
 		}
-		LogisticsEventListener.watcherList.get(event.chunk).add(event.player);
+		LogisticsEventListener.watcherList.get(event.getChunk()).add(event.getPlayer());
 	}
 
 	@SubscribeEvent
 	public void unWatchChunk(UnWatch event) {
-		if (LogisticsEventListener.watcherList.containsKey(event.chunk)) {
-			LogisticsEventListener.watcherList.get(event.chunk).remove(event.player);
+		if (LogisticsEventListener.watcherList.containsKey(event.getChunk())) {
+			LogisticsEventListener.watcherList.get(event.getChunk()).remove(event.getPlayer());
 		}
 	}
 
@@ -227,7 +227,7 @@ public class LogisticsEventListener {
 	@SideOnly(Side.CLIENT)
 	public void onGuiOpen(GuiOpenEvent event) {
 		if (!LogisticsEventListener.getGuiPos().isEmpty()) {
-			if (event.gui == null) {
+			if (event.getGui() == null) {
 				GuiEntry part = LogisticsEventListener.getGuiPos().peek();
 				if (part.isActive()) {
 					part = LogisticsEventListener.getGuiPos().poll();
@@ -239,10 +239,10 @@ public class LogisticsEventListener {
 				part.setActive(true);
 			}
 		}
-		if (event.gui == null) {
+		if (event.getGui() == null) {
 			LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(false);
 		}
-		if (event.gui instanceof GuiChest || (SimpleServiceLocator.ironChestProxy != null && SimpleServiceLocator.ironChestProxy.isChestGui(event.gui))) {
+		if (event.getGui() instanceof GuiChest || (SimpleServiceLocator.ironChestProxy != null && SimpleServiceLocator.ironChestProxy.isChestGui(event.getGui()))) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ChestGuiOpened.class));
 		} else {
 			QuickSortChestMarkerStorage.getInstance().disable();
@@ -285,10 +285,10 @@ public class LogisticsEventListener {
 				String versionMessage = checker.getVersionCheckerStatus();
 
 				if (checker.isVersionCheckDone() && checker.getVersionInfo().isNewVersionAvailable() && !checker.getVersionInfo().isImcMessageSent()) {
-					playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
-					playerEntity.addChatComponentMessage(new ChatComponentText("Use \"/logisticspipes changelog\" to see a changelog."));
+					playerEntity.addChatComponentMessage(new TextComponentString(versionMessage));
+					playerEntity.addChatComponentMessage(new TextComponentString("Use \"/logisticspipes changelog\" to see a changelog."));
 				} else if (!checker.isVersionCheckDone()) {
-					playerEntity.addChatComponentMessage(new ChatComponentText(versionMessage));
+					playerEntity.addChatComponentMessage(new TextComponentString(versionMessage));
 				}
 			});
 		}

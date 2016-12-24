@@ -1,6 +1,6 @@
 package logisticspipes.renderer.state;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 
@@ -29,15 +29,15 @@ public class TextureMatrix {
 	@Getter
 	private boolean isFluid;
 	@Getter
-	private ForgeDirection pointedOrientation;
+	private EnumFacing pointedOrientation;
 
 	private boolean dirty = false;
 
-	public int getTextureIndex(ForgeDirection direction) {
+	public int getTextureIndex(EnumFacing direction) {
 		return iconIndexes[direction.ordinal()];
 	}
 
-	public void setIconIndex(ForgeDirection direction, int value) {
+	public void setIconIndex(EnumFacing direction, int value) {
 		if (iconIndexes[direction.ordinal()] != value) {
 			iconIndexes[direction.ordinal()] = value;
 			dirty = true;
@@ -56,16 +56,16 @@ public class TextureMatrix {
 		if (isRouted) {
 			CoreRoutedPipe cPipe = (CoreRoutedPipe) pipe;
 			for (int i = 0; i < 6; i++) {
-				if (isRoutedInDir[i] != cPipe.getRouter().isRoutedExit(ForgeDirection.getOrientation(i))) {
+				if (isRoutedInDir[i] != cPipe.getRouter().isRoutedExit(EnumFacing.getOrientation(i))) {
 					dirty = true;
 				}
-				isRoutedInDir[i] = cPipe.getRouter().isRoutedExit(ForgeDirection.getOrientation(i));
+				isRoutedInDir[i] = cPipe.getRouter().isRoutedExit(EnumFacing.getOrientation(i));
 			}
 			for (int i = 0; i < 6; i++) {
-				if (isSubPowerInDir[i] != cPipe.getRouter().isSubPoweredExit(ForgeDirection.getOrientation(i))) {
+				if (isSubPowerInDir[i] != cPipe.getRouter().isSubPoweredExit(EnumFacing.getOrientation(i))) {
 					dirty = true;
 				}
-				isSubPowerInDir[i] = cPipe.getRouter().isSubPoweredExit(ForgeDirection.getOrientation(i));
+				isSubPowerInDir[i] = cPipe.getRouter().isSubPoweredExit(EnumFacing.getOrientation(i));
 			}
 			if (hasPowerUpgrade != (cPipe.getUpgradeManager().hasRFPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0)) {
 				dirty = true;
@@ -88,15 +88,15 @@ public class TextureMatrix {
 		}
 	}
 
-	public boolean isRoutedInDir(ForgeDirection dir) {
-		if (dir == ForgeDirection.UNKNOWN) {
+	public boolean isRoutedInDir(EnumFacing dir) {
+		if (dir == EnumFacing.UNKNOWN) {
 			return false;
 		}
 		return isRoutedInDir[dir.ordinal()];
 	}
 
-	public boolean isSubPowerInDir(ForgeDirection dir) {
-		if (dir == ForgeDirection.UNKNOWN) {
+	public boolean isSubPowerInDir(EnumFacing dir) {
+		if (dir == EnumFacing.UNKNOWN) {
 			return false;
 		}
 		return isSubPowerInDir[dir.ordinal()];
@@ -121,7 +121,7 @@ public class TextureMatrix {
 		output.writeBoolean(hasPowerUpgrade);
 		output.writeBoolean(hasPower);
 		output.writeBoolean(isFluid);
-		output.writeForgeDirection(pointedOrientation);
+		output.writeEnumFacing(pointedOrientation);
 	}
 
 	public void readData(LPDataInput input) {
@@ -139,6 +139,6 @@ public class TextureMatrix {
 		hasPowerUpgrade = input.readBoolean();
 		hasPower = input.readBoolean();
 		isFluid = input.readBoolean();
-		pointedOrientation = input.readForgeDirection();
+		pointedOrientation = input.readEnumFacing();
 	}
 }

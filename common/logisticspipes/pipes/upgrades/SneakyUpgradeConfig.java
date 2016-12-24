@@ -5,7 +5,7 @@ import java.util.Arrays;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,19 +27,19 @@ public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 
 	@AllArgsConstructor
 	public enum Sides {
-		UP(ForgeDirection.UP, "LPSNEAKY-UP"),
-		DOWN(ForgeDirection.DOWN, "LPSNEAKY-DOWN"),
-		NORTH(ForgeDirection.NORTH, "LPSNEAKY-NORTH"),
-		SOUTH(ForgeDirection.SOUTH, "LPSNEAKY-SOUTH"),
-		EAST(ForgeDirection.EAST, "LPSNEAKY-EAST"),
-		WEST(ForgeDirection.WEST, "LPSNEAKY-WEST");
+		UP(EnumFacing.UP, "LPSNEAKY-UP"),
+		DOWN(EnumFacing.DOWN, "LPSNEAKY-DOWN"),
+		NORTH(EnumFacing.NORTH, "LPSNEAKY-NORTH"),
+		SOUTH(EnumFacing.SOUTH, "LPSNEAKY-SOUTH"),
+		EAST(EnumFacing.EAST, "LPSNEAKY-EAST"),
+		WEST(EnumFacing.WEST, "LPSNEAKY-WEST");
 
 		@Getter
-		private ForgeDirection dir;
+		private EnumFacing dir;
 		@Getter
 		private String lpName;
 
-		public static String getNameForDirection(ForgeDirection fd) {
+		public static String getNameForDirection(EnumFacing fd) {
 			return Arrays.stream(values())
 					.filter(side -> side.getDir() == fd)
 					.map(Sides::getLpName)
@@ -79,7 +79,7 @@ public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 		return NewGuiHandler.getGui(SneakyUpgradeConfigGuiProvider.class);
 	}
 
-	public ForgeDirection getSide(ItemStack stack) {
+	public EnumFacing getSide(ItemStack stack) {
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
@@ -90,6 +90,6 @@ public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 				.filter(side -> side.getLpName().equals(sideString))
 				.map(Sides::getDir)
 				.findFirst()
-				.orElse(ForgeDirection.UNKNOWN);
+				.orElse(EnumFacing.UNKNOWN);
 	}
 }

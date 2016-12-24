@@ -3,6 +3,7 @@ package logisticspipes.proxy.forestry;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,9 +14,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.apiculture.EnumBeeType;
 import forestry.api.apiculture.IAlleleBeeSpecies;
@@ -521,7 +522,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconIndexForAlleleId(String uid, int phase) {
+	public TextureAtlasSprite getIconIndexForAlleleId(String uid, int phase) {
 		IAllele bSpecies = forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
 		if (!(bSpecies instanceof IAlleleBeeSpecies)) {
 			bSpecies = root.getDefaultTemplate()[forestry.api.apiculture.EnumBeeChromosome.SPECIES.ordinal()];
@@ -563,7 +564,7 @@ public class ForestryProxy implements IForestryProxy {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromTextureManager(String name) {
+	public TextureAtlasSprite getIconFromTextureManager(String name) {
 		return ForestryAPI.textureManager.getDefault(name);
 	}
 

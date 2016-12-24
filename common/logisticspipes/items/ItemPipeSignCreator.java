@@ -20,10 +20,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemPipeSignCreator extends LogisticsItem {
 
@@ -57,8 +57,8 @@ public class ItemPipeSignCreator extends LogisticsItem {
 
 		int mode = itemStack.getTagCompound().getInteger("CreatorMode");
 
-		ForgeDirection dir = ForgeDirection.getOrientation(sideinput);
-		if (dir == ForgeDirection.UNKNOWN) {
+		EnumFacing dir = EnumFacing.getOrientation(sideinput);
+		if (dir == EnumFacing.UNKNOWN) {
 			return false;
 		}
 

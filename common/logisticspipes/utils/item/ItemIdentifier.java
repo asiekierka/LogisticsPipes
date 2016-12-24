@@ -22,8 +22,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import logisticspipes.asm.addinfo.IAddInfo;
 import logisticspipes.asm.addinfo.IAddInfoProvider;
 import logisticspipes.items.LogisticsFluidContainer;
@@ -54,9 +54,6 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.world.World;
-
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 
 /**
  * @author Krapht I have no bloody clue what different mods use to differate
@@ -374,7 +371,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 				proposal = info.ident;
 			}
 		}
-		ItemIdentifier ident = ItemIdentifier.get(itemStack.getItem(), itemStack.getItemDamage(), itemStack.stackTagCompound, proposal);
+		ItemIdentifier ident = ItemIdentifier.get(itemStack.getItem(), itemStack.getItemDamage(), itemStack.getTagCompound(), proposal);
 		if(ident != proposal && prov != null && !itemStack.hasTagCompound()) {
 			prov.setLogisticsPipesAddInfo(new ItemStackAddInfo(ident));
 		}
@@ -473,12 +470,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	public String getModName() {
 		if (modName == null) {
-			UniqueIdentifier ui = GameRegistry.findUniqueIdentifierFor(item);
-			if (ui == null) {
-				modName = "UNKNOWN";
-			} else {
-				modName = ui.modId;
-			}
+			modName = item.getRegistryName().getResourceDomain();
 		}
 		return modName;
 	}
@@ -592,41 +584,38 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		if (nbt instanceof NBTTagByte) {
 			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagByte");
-			map.put("value", ((NBTTagByte) nbt).func_150290_f());
+			map.put("value", ((NBTTagByte) nbt).getByte());
 			return map;
 		} else if (nbt instanceof NBTTagByteArray) {
 			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagByteArray");
-			map.put("value", ItemIdentifier.getArrayAsMap(((NBTTagByteArray) nbt).func_150292_c()));
+			map.put("value", ItemIdentifier.getArrayAsMap(((NBTTagByteArray) nbt).getByteArray()));
 			return map;
 		} else if (nbt instanceof NBTTagDouble) {
 			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagDouble");
-			map.put("value", ((NBTTagDouble) nbt).func_150286_g());
+			map.put("value", ((NBTTagDouble) nbt).getDouble());
 			return map;
 		} else if (nbt instanceof NBTTagFloat) {
 			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagFloat");
-			map.put("value", ((NBTTagFloat) nbt).func_150288_h());
+			map.put("value", ((NBTTagFloat) nbt).getFloat());
 			return map;
 		} else if (nbt instanceof NBTTagInt) {
 			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagInt");
-			map.put("value", ((NBTTagInt) nbt).func_150287_d());
+			map.put("value", ((NBTTagInt) nbt).getInt());
 			return map;
 		} else if (nbt instanceof NBTTagIntArray) {
 			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagIntArray");
-			map.put("value", ItemIdentifier.getArrayAsMap(((NBTTagIntArray) nbt).func_150302_c()));
+			map.put("value", ItemIdentifier.getArrayAsMap(((NBTTagIntArray) nbt).getIntArray()));
 			return map;
 		} else if (nbt instanceof NBTTagList) {
-			List internal = ((NBTTagList) nbt).tagList;
 			HashMap<Integer, Object> content = new HashMap<>();
 			int i = 1;
-			for (Object object : internal) {
-				if (object instanceof NBTBase) {
-					content.put(i, ItemIdentifier.getNBTBaseAsMap((NBTBase) object));
-				}
+			for (int p = 0; p < ((NBTTagList) nbt).tagCount(); p++) {
+				content.put(i, ItemIdentifier.getNBTBaseAsMap(((NBTTagList) nbt).get(p)));
 				i++;
 			}
 			HashMap<Object, Object> map = new HashMap<>();
@@ -634,16 +623,13 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			map.put("value", content);
 			return map;
 		} else if (nbt instanceof NBTTagCompound) {
-			Map internal = ((NBTTagCompound) nbt).tagMap;
+			NBTTagCompound compound = (NBTTagCompound) nbt;
 			HashMap<Object, Object> content = new HashMap<>();
 			HashMap<Integer, Object> keys = new HashMap<>();
 			int i = 1;
-			for (Object object : internal.entrySet()) {
-				Entry e = (Entry) object;
-				if (e.getValue() instanceof NBTBase) {
-					content.put(e.getKey(), ItemIdentifier.getNBTBaseAsMap((NBTBase) e.getValue()));
-					keys.put(i, e.getKey());
-				}
+			for (String key : compound.getKeySet()) {
+				content.put(key, ItemIdentifier.getNBTBaseAsMap(compound.getTag(key)));
+				keys.put(i, key);
 				i++;
 			}
 			HashMap<Object, Object> map = new HashMap<>();
@@ -654,17 +640,17 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		} else if (nbt instanceof NBTTagLong) {
 			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagLong");
-			map.put("value", ((NBTTagLong) nbt).func_150291_c());
+			map.put("value", ((NBTTagLong) nbt).getLong());
 			return map;
 		} else if (nbt instanceof NBTTagShort) {
 			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagShort");
-			map.put("value", ((NBTTagShort) nbt).func_150287_d());
+			map.put("value", ((NBTTagShort) nbt).getShort());
 			return map;
 		} else if (nbt instanceof NBTTagString) {
 			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagString");
-			map.put("value", ((NBTTagString) nbt).func_150285_a_());
+			map.put("value", ((NBTTagString) nbt).getString());
 			return map;
 		} else {
 			throw new UnsupportedOperationException("Unsupported NBTBase of type:" + nbt.getClass().getName());
@@ -780,56 +766,55 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			return;
 		}
 		if (nbt instanceof NBTTagByte) {
-			sb.append("TagByte(data=" + ((NBTTagByte) nbt).func_150290_f() + ")");
+			sb.append("TagByte(data=" + ((NBTTagByte) nbt).getByte() + ")");
 		} else if (nbt instanceof NBTTagShort) {
-			sb.append("TagShort(data=" + ((NBTTagShort) nbt).func_150289_e() + ")");
+			sb.append("TagShort(data=" + ((NBTTagShort) nbt).getShort() + ")");
 		} else if (nbt instanceof NBTTagInt) {
-			sb.append("TagInt(data=" + ((NBTTagInt) nbt).func_150287_d() + ")");
+			sb.append("TagInt(data=" + ((NBTTagInt) nbt).getInt() + ")");
 		} else if (nbt instanceof NBTTagLong) {
-			sb.append("TagLong(data=" + ((NBTTagLong) nbt).func_150291_c() + ")");
+			sb.append("TagLong(data=" + ((NBTTagLong) nbt).getLong() + ")");
 		} else if (nbt instanceof NBTTagFloat) {
-			sb.append("TagFloat(data=" + ((NBTTagFloat) nbt).func_150288_h() + ")");
+			sb.append("TagFloat(data=" + ((NBTTagFloat) nbt).getFloat() + ")");
 		} else if (nbt instanceof NBTTagDouble) {
-			sb.append("TagDouble(data=" + ((NBTTagDouble) nbt).func_150286_g() + ")");
+			sb.append("TagDouble(data=" + ((NBTTagDouble) nbt).getDouble() + ")");
 		} else if (nbt instanceof NBTTagString) {
-			sb.append("TagString(data=\"" + ((NBTTagString) nbt).func_150285_a_() + "\")");
+			sb.append("TagString(data=\"" + ((NBTTagString) nbt).getString() + "\")");
 		} else if (nbt instanceof NBTTagByteArray) {
 			sb.append("TagByteArray(data=");
-			for (int i = 0; i < ((NBTTagByteArray) nbt).func_150292_c().length; i++) {
-				sb.append(((NBTTagByteArray) nbt).func_150292_c()[i]);
-				if (i < ((NBTTagByteArray) nbt).func_150292_c().length - 1) {
+			for (int i = 0; i < ((NBTTagByteArray) nbt).getByteArray().length; i++) {
+				sb.append(((NBTTagByteArray) nbt).getByteArray()[i]);
+				if (i < ((NBTTagByteArray) nbt).getByteArray().length - 1) {
 					sb.append(",");
 				}
 			}
 			sb.append(")");
 		} else if (nbt instanceof NBTTagIntArray) {
 			sb.append("TagIntArray(data=");
-			for (int i = 0; i < ((NBTTagIntArray) nbt).func_150302_c().length; i++) {
-				sb.append(((NBTTagIntArray) nbt).func_150302_c()[i]);
-				if (i < ((NBTTagIntArray) nbt).func_150302_c().length - 1) {
+			for (int i = 0; i < ((NBTTagIntArray) nbt).getIntArray().length; i++) {
+				sb.append(((NBTTagIntArray) nbt).getIntArray()[i]);
+				if (i < ((NBTTagIntArray) nbt).getIntArray().length - 1) {
 					sb.append(",");
 				}
 			}
 			sb.append(")");
 		} else if (nbt instanceof NBTTagList) {
 			sb.append("TagList(data=");
-			for (int i = 0; i < ((NBTTagList) nbt).tagList.size(); i++) {
-				debugDumpTag((NBTBase) (((NBTTagList) nbt).tagList.get(i)), sb);
-				if (i < ((NBTTagList) nbt).tagList.size() - 1) {
+			for (int i = 0; i < ((NBTTagList) nbt).tagCount(); i++) {
+				debugDumpTag((((NBTTagList) nbt).get(i)), sb);
+				if (i < ((NBTTagList) nbt).tagCount() - 1) {
 					sb.append(",");
 				}
 			}
 			sb.append(")");
 		} else if (nbt instanceof NBTTagCompound) {
 			sb.append("TagCompound(data=");
-			Object[] oe = ((NBTTagCompound) nbt).tagMap.entrySet().toArray();
-			for (int i = 0; i < oe.length; i++) {
-				Entry<String, NBTBase> e = (Entry<String, NBTBase>) (oe[i]);
-				sb.append("\"" + e.getKey() + "\"=");
-				debugDumpTag((e.getValue()), sb);
-				if (i < oe.length - 1) {
+			int i = 0;
+			for (String key : ((NBTTagCompound) nbt).getKeySet()) {
+				if (i++ > 0) {
 					sb.append(",");
 				}
+				sb.append("\"" + key + "\"=");
+				debugDumpTag((((NBTTagCompound) nbt).getTag(key)), sb);
 			}
 			sb.append(")");
 		} else {

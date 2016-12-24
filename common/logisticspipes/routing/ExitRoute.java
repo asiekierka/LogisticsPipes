@@ -16,10 +16,10 @@ import java.util.Set;
 
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -40,8 +40,8 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 	public final int blockDistance;
 	public final EnumSet<PipeRoutingConnectionType> connectionDetails;
 	public final IRouter destination;
-	public ForgeDirection exitOrientation;
-	public ForgeDirection insertOrientation;
+	public EnumFacing exitOrientation;
+	public EnumFacing insertOrientation;
 	public double distanceToDestination;
 	public IRouter root;
 	public List<IFilter> filters = Collections.unmodifiableList(new ArrayList<>(0));
@@ -51,7 +51,7 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 	 */
 	public ExitRouteDebug debug = new ExitRouteDebug();
 
-	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, double metric,
+	public ExitRoute(IRouter source, IRouter destination, EnumFacing exitOrientation, EnumFacing insertOrientation, double metric,
 			EnumSet<PipeRoutingConnectionType> connectionDetails, int blockDistance) {
 		this.destination = destination;
 		this.root = source;
@@ -85,8 +85,8 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 			root = null;
 		}
 
-		exitOrientation = input.readForgeDirection();
-		insertOrientation = input.readForgeDirection();
+		exitOrientation = input.readEnumFacing();
+		insertOrientation = input.readEnumFacing();
 
 		connectionDetails = input.readEnumSet(PipeRoutingConnectionType.class);
 
@@ -109,7 +109,7 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 
 	public ExitRoute(IRouter source, IRouter destination, double distance, EnumSet<PipeRoutingConnectionType> enumSet, List<IFilter> filterA,
 			List<IFilter> filterB, int blockDistance) {
-		this(source, destination, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN, distance, enumSet, blockDistance);
+		this(source, destination, EnumFacing.UNKNOWN, EnumFacing.UNKNOWN, distance, enumSet, blockDistance);
 		List<IFilter> filter = new ArrayList<>(filterA.size() + filterB.size());
 		filter.addAll(filterA);
 		filter.addAll(filterB);
@@ -142,8 +142,8 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 			root.write(output);
 		}
 
-		output.writeForgeDirection(exitOrientation);
-		output.writeForgeDirection(insertOrientation);
+		output.writeEnumFacing(exitOrientation);
+		output.writeEnumFacing(insertOrientation);
 
 		output.writeEnumSet(connectionDetails, PipeRoutingConnectionType.class);
 

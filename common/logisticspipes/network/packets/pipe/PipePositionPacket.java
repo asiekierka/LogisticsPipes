@@ -2,7 +2,7 @@ package logisticspipes.network.packets.pipe;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,10 +26,10 @@ public class PipePositionPacket extends CoordinatesPacket {
 	private float position;
 	@Getter
 	@Setter
-	private ForgeDirection input;
+	private EnumFacing input;
 	@Getter
 	@Setter
-	private ForgeDirection output;
+	private EnumFacing output;
 	@Getter
 	@Setter
 	private float yaw;
@@ -53,8 +53,8 @@ public class PipePositionPacket extends CoordinatesPacket {
 		output.writeInt(travelId);
 		output.writeFloat(speed);
 		output.writeFloat(position);
-		output.writeForgeDirection(input);
-		output.writeForgeDirection(this.output);
+		output.writeEnumFacing(input);
+		output.writeEnumFacing(this.output);
 		output.writeFloat(yaw);
 	}
 
@@ -64,8 +64,8 @@ public class PipePositionPacket extends CoordinatesPacket {
 		travelId = input.readInt();
 		speed = input.readFloat();
 		position = input.readFloat();
-		this.input = input.readForgeDirection();
-		output = input.readForgeDirection();
+		this.input = input.readEnumFacing();
+		output = input.readEnumFacing();
 		yaw = input.readFloat();
 	}
 

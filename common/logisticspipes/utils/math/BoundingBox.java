@@ -3,7 +3,7 @@ package logisticspipes.utils.math;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -40,7 +40,7 @@ public class BoundingBox {
 		this(bc.getXDouble(), bc.getYDouble(), bc.getZDouble(), bc.getXDouble() + 1, bc.getYDouble() + 1, bc.getZDouble() + 1);
 	}
 
-	public List<Vertex> getCornersWithUvForFace(ForgeDirection face, float minU, float maxU, float minV, float maxV) {
+	public List<Vertex> getCornersWithUvForFace(EnumFacing face, float minU, float maxU, float minV, float maxV) {
 		List<Vertex> result = new ArrayList<>(4);
 		switch (face) {
 			case NORTH:

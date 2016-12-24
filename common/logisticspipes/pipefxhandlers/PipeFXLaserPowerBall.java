@@ -5,20 +5,20 @@ import java.util.Random;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import lombok.experimental.Accessors;
 import org.lwjgl.opengl.GL11;
 
 @Accessors(chain = true)
-public class PipeFXLaserPowerBall extends EntityFX {
+public class PipeFXLaserPowerBall extends Particle {
 
 	private static final ResourceLocation ball = new ResourceLocation("logisticspipes", "textures/particles/laserBall.png");
 	private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
@@ -74,9 +74,9 @@ public class PipeFXLaserPowerBall extends EntityFX {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glDepthMask(false);
 
-		double x = posX - EntityFX.interpPosX;
-		double y = posY - EntityFX.interpPosY;
-		double z = posZ - EntityFX.interpPosZ;
+		double x = posX - Particle.interpPosX;
+		double y = posY - Particle.interpPosY;
+		double z = posZ - Particle.interpPosZ;
 		GL11.glTranslated(x, y, z);
 
 		GL11.glRotatef(rot, 0.0F, 1.0F, 0.0F);

@@ -61,7 +61,7 @@ public class RemoteOrderer extends Item {
 			}
 		}
 
-		if (itemstack.hasTagCompound() && itemstack.stackTagCompound.hasKey("connectedPipe-x")) {
+		if (itemstack.hasTagCompound() && itemstack.getTagCompound().hasKey("connectedPipe-x")) {
 			list.add("\u00a77Has Remote Pipe");
 		}
 
@@ -96,9 +96,9 @@ public class RemoteOrderer extends Item {
 
 	public static void connectToPipe(ItemStack stack, PipeItemsRemoteOrdererLogistics pipe) {
 		stack.stackTagCompound = new NBTTagCompound();
-		stack.stackTagCompound.setInteger("connectedPipe-x", pipe.getX());
-		stack.stackTagCompound.setInteger("connectedPipe-y", pipe.getY());
-		stack.stackTagCompound.setInteger("connectedPipe-z", pipe.getZ());
+		stack.getTagCompound().setInteger("connectedPipe-x", pipe.getX());
+		stack.getTagCompound().setInteger("connectedPipe-y", pipe.getY());
+		stack.getTagCompound().setInteger("connectedPipe-z", pipe.getZ());
 		int dimension = 0;
 		for (Integer dim : DimensionManager.getIDs()) {
 			if (pipe.getWorld().equals(DimensionManager.getWorld(dim.intValue()))) {
@@ -106,7 +106,7 @@ public class RemoteOrderer extends Item {
 				break;
 			}
 		}
-		stack.stackTagCompound.setInteger("connectedPipe-world-dim", dimension);
+		stack.getTagCompound().setInteger("connectedPipe-world-dim", dimension);
 	}
 
 	public static PipeItemsRemoteOrdererLogistics getPipe(ItemStack stack) {
@@ -116,18 +116,18 @@ public class RemoteOrderer extends Item {
 		if (!stack.hasTagCompound()) {
 			return null;
 		}
-		if (!stack.stackTagCompound.hasKey("connectedPipe-x") || !stack.stackTagCompound.hasKey("connectedPipe-y") || !stack.stackTagCompound.hasKey("connectedPipe-z")) {
+		if (!stack.getTagCompound().hasKey("connectedPipe-x") || !stack.getTagCompound().hasKey("connectedPipe-y") || !stack.getTagCompound().hasKey("connectedPipe-z")) {
 			return null;
 		}
-		if (!stack.stackTagCompound.hasKey("connectedPipe-world-dim")) {
+		if (!stack.getTagCompound().hasKey("connectedPipe-world-dim")) {
 			return null;
 		}
-		int dim = stack.stackTagCompound.getInteger("connectedPipe-world-dim");
+		int dim = stack.getTagCompound().getInteger("connectedPipe-world-dim");
 		World world = DimensionManager.getWorld(dim);
 		if (world == null) {
 			return null;
 		}
-		TileEntity tile = world.getTileEntity(stack.stackTagCompound.getInteger("connectedPipe-x"), stack.stackTagCompound.getInteger("connectedPipe-y"), stack.stackTagCompound.getInteger("connectedPipe-z"));
+		TileEntity tile = world.getTileEntity(stack.getTagCompound().getInteger("connectedPipe-x"), stack.getTagCompound().getInteger("connectedPipe-y"), stack.getTagCompound().getInteger("connectedPipe-z"));
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}

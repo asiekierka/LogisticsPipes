@@ -55,7 +55,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -218,7 +218,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeForgeDirection(ForgeDirection direction) {
+	public void writeEnumFacing(EnumFacing direction) {
 		if (direction == null) {
 			writeByte(Byte.MIN_VALUE);
 		} else {
@@ -416,13 +416,13 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public ForgeDirection readForgeDirection() {
+	public EnumFacing readEnumFacing() {
 		byte b = localBuffer.readByte();
 
 		if (b == Byte.MIN_VALUE) {
 			return null;
 		}
-		return ForgeDirection.values()[b];
+		return EnumFacing.values()[b];
 	}
 
 	@Override

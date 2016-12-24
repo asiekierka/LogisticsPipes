@@ -3,7 +3,7 @@ package logisticspipes.proxy.interfaces;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import logisticspipes.recipes.CraftingParts;
 
@@ -27,12 +27,12 @@ public interface IIC2Proxy {
 
 	void unregisterToEneryNet(TileEntity tile);
 
-	boolean acceptsEnergyFrom(TileEntity energy, TileEntity tile, ForgeDirection opposite);
+	boolean acceptsEnergyFrom(TileEntity energy, TileEntity tile, EnumFacing opposite);
 
 	boolean isEnergySink(TileEntity tile);
 
 	double demandedEnergyUnits(TileEntity tile);
 
-	double injectEnergyUnits(TileEntity tile, ForgeDirection opposite, double d);
+	double injectEnergyUnits(TileEntity tile, EnumFacing opposite, double d);
 
 }

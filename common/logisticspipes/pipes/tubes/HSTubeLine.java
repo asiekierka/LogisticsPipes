@@ -1,14 +1,15 @@
 package logisticspipes.pipes.tubes;
 
 import java.util.List;
+import java.util.Objects;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 
@@ -104,18 +105,18 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 		if (w < 0) {
 			w += 2 * Math.PI;
 		}
-		ForgeDirection dir = ForgeDirection.UNKNOWN;
+		EnumFacing dir = null;
 		if (0 < w && w <= halfPI) {
-			dir = ForgeDirection.WEST;
+			dir = EnumFacing.WEST;
 		} else if (halfPI < w && w <= 2 * halfPI) {
-			dir = ForgeDirection.SOUTH;
+			dir = EnumFacing.SOUTH;
 		} else if (2 * halfPI < w && w <= 3 * halfPI) {
-			dir = ForgeDirection.EAST;
+			dir = EnumFacing.EAST;
 		} else if (3 * halfPI < w && w <= 4 * halfPI) {
-			dir = ForgeDirection.NORTH;
+			dir = EnumFacing.NORTH;
 		}
 		for (TubeLineOrientation ori : TubeLineOrientation.values()) {
-			if (ori.dir.equals(dir)) {
+			if (Objects.equals(ori.dir, dir)) {
 				return ori;
 			}
 		}
@@ -128,12 +129,12 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public ForgeDirection getExitForInput(ForgeDirection commingFrom) {
+	public EnumFacing getExitForInput(EnumFacing commingFrom) {
 		return commingFrom.getOpposite();
 	}
 
 	@Override
-	public TileEntity getConnectedEndTile(ForgeDirection output) {
+	public TileEntity getConnectedEndTile(EnumFacing output) {
 		if (output == this.orientation.dir || output.getOpposite() == this.orientation.dir) {
 			return container.getTile(output);
 		}
@@ -141,7 +142,7 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public int getIconIndex(ForgeDirection direction) {
+	public int getIconIndex(EnumFacing direction) {
 		return 0;
 	}
 
@@ -171,19 +172,19 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	}
 
 	public enum TubeLineOrientation implements ITubeOrientation {
-		NORTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.NORTH),
-		SOUTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), ForgeDirection.SOUTH),
-		EAST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.EAST),
-		WEST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), ForgeDirection.WEST);
+		NORTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), EnumFacing.NORTH),
+		SOUTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), EnumFacing.SOUTH),
+		EAST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), EnumFacing.EAST),
+		WEST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), EnumFacing.WEST);
 
 		@Getter
 		TubeLineRenderOrientation renderOrientation;
 		@Getter
 		DoubleCoordinates offset;
 		@Getter
-		ForgeDirection dir;
+		EnumFacing dir;
 
-		TubeLineOrientation(TubeLineRenderOrientation render, DoubleCoordinates off, ForgeDirection dir) {
+		TubeLineOrientation(TubeLineRenderOrientation render, DoubleCoordinates off, EnumFacing dir) {
 			renderOrientation = render;
 			offset = off;
 			this.dir = dir;
@@ -201,13 +202,13 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	}
 
 	public enum TubeLineRenderOrientation implements ITubeRenderOrientation {
-		NORTH_SOUTH(ForgeDirection.NORTH),
-		EAST_WEST(ForgeDirection.EAST);
+		NORTH_SOUTH(EnumFacing.NORTH),
+		EAST_WEST(EnumFacing.EAST);
 
 		@Getter
-		private ForgeDirection dir;
+		private EnumFacing dir;
 
-		TubeLineRenderOrientation(ForgeDirection dir) {
+		TubeLineRenderOrientation(EnumFacing dir) {
 			this.dir = dir;
 		}
 

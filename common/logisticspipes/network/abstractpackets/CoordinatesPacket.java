@@ -1,6 +1,7 @@
 package logisticspipes.network.abstractpackets;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import lombok.Getter;
@@ -15,7 +16,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 @ToString
 public abstract class CoordinatesPacket extends ModernPacket {
-
+	// TODO: Refactor into BlockPos
 	@Getter
 	@Setter
 	private int posX;
@@ -47,10 +48,20 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	}
 
+	public BlockPos getPos() {
+		return new BlockPos(posX, posY, posZ);
+	}
+
+	public CoordinatesPacket setPos(BlockPos pos) {
+		setPosX(pos.getX());
+		setPosY(pos.getY());
+		setPosZ(pos.getZ());
+		return this;
+	}
+
+	@Deprecated
 	public CoordinatesPacket setTilePos(TileEntity tile) {
-		setPosX(tile.xCoord);
-		setPosY(tile.yCoord);
-		setPosZ(tile.zCoord);
+		setPos(tile.getPos());
 		return this;
 	}
 
@@ -81,12 +92,12 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			targetNotFound("World was null");
 			return null;
 		}
-		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
+		if (!world.isBlockLoaded(getPos())) {
 			targetNotFound("Couldn't find " + clazz.getName());
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
+		final TileEntity tile = world.getTileEntity(getPos());
 		if (tile != null) {
 			if (!(clazz.isAssignableFrom(tile.getClass()))) {
 				targetNotFound("Couldn't find " + clazz.getName() + ", found " + tile.getClass());
@@ -111,12 +122,12 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			targetNotFound("World was null");
 			return null;
 		}
-		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
+		if (!world.isBlockLoaded(getPos())) {
 			targetNotFound("Couldn't find " + clazz.getName());
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(getPosX(), getPosY(), getPosZ());
+		final TileEntity tile = world.getTileEntity(getPos());
 		if (tile != null) {
 			if (clazz.isAssignableFrom(tile.getClass())) {
 				return (T) tile;

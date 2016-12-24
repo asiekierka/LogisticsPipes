@@ -11,7 +11,12 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -32,8 +37,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Getter;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
@@ -75,19 +80,21 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 	@Override
 	//TODO use own pipe handling
-	public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int x, int y, int z, int sideI, float par8, float par9, float par10) {
-		int side = sideI;
+	//TODO use BlockPos more
+	public EnumActionResult onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, BlockPos pos, EnumHand hand, EnumFacing sideI, float par8, float par9, float par10) {
+		int side = sideI.ordinal();
 		Block block = LogisticsPipes.LogisticsPipeBlock;
 
-		int i = x;
-		int j = y;
-		int k = z;
+		int i = pos.getX();
+		int j = pos.getY();
+		int k = pos.getZ();
 
-		Block worldBlock = world.getBlock(i, j, k);
+		IBlockState worldState = world.getBlockState(pos);
+		Block worldBlock = worldState.getBlock();
 
-		if (worldBlock == Blocks.snow) {
+		if (worldBlock == Blocks.SNOW) {
 			side = 1;
-		} else if (worldBlock != Blocks.vine && worldBlock != Blocks.tallgrass && worldBlock != Blocks.deadbush && (worldBlock == null || !worldBlock.isReplaceable(world, i, j, k))) {
+		} else if (worldBlock != Blocks.VINE && worldBlock != Blocks.TALLGRASS && worldBlock != Blocks.DEADBUSH && worldBlock.isReplaceable(world, pos)) {
 			if (side == 0) {
 				j--;
 			}
@@ -109,7 +116,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		}
 
 		if (itemstack.stackSize == 0) {
-			return false;
+			return EnumActionResult.FAIL;
 		}
 
 		if (!dummyPipe.isMultiBlock()) {
@@ -127,7 +134,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 					itemstack.stackSize--;
 				}
 
-				return true;
+				return EnumActionResult.SUCCESS;
 			} else {
 				return false;
 			}

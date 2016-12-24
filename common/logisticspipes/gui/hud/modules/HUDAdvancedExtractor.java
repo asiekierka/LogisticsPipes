@@ -15,9 +15,9 @@ import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
 import net.minecraft.client.Minecraft;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.opengl.GL11;
 
@@ -38,10 +38,10 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 	public void renderContent(boolean shifted) {
 		if (selected == 0) {
 			Minecraft mc = FMLClientHandler.instance().getClient();
-			ForgeDirection d = module.getSneakyDirection();
+			EnumFacing d = module.getSneakyDirection();
 			mc.fontRenderer.drawString("Extract", -22, -22, 0);
 			mc.fontRenderer.drawString("from:", -22, -9, 0);
-			mc.fontRenderer.drawString(((d == ForgeDirection.UNKNOWN) ? "DEFAULT" : d.name()), -22, 18, 0);
+			mc.fontRenderer.drawString(((d == EnumFacing.UNKNOWN) ? "DEFAULT" : d.name()), -22, 18, 0);
 		} else {
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			GL11.glScalef(1.0F, 1.0F, -0.00001F);

@@ -2,6 +2,7 @@ package logisticspipes.routing.pathfinder.changedetection;
 
 import java.util.ArrayList;
 
+import net.minecraft.util.math.BlockPos;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -19,12 +20,12 @@ import logisticspipes.ticks.QueuedTasks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class TEControl {
 
 	public static void validate(final TileEntity tile) {
-		final World world = tile.getWorldObj();
+		final World world = tile.getWorld();
 		if (world == null) {
 			return;
 		}
@@ -50,7 +51,7 @@ public class TEControl {
 				if (!SimpleServiceLocator.pipeInformationManager.isPipe(tile, true, ConnectionPipeType.UNDEFINED)) {
 					return null;
 				}
-				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+				for (EnumFacing dir : EnumFacing.VALUES) {
 					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 					if (!newPos.blockExists(world)) {
 						continue;
@@ -75,7 +76,7 @@ public class TEControl {
 	}
 
 	public static void invalidate(final TileEntity tile) {
-		final World world = tile.getWorldObj();
+		final World world = tile.getWorld();
 		if (world == null) {
 			return;
 		}
@@ -88,7 +89,7 @@ public class TEControl {
 		if (((ILPTEInformation) tile).getObject() != null) {
 			QueuedTasks.queueTask(() -> {
 				DoubleCoordinates pos = new DoubleCoordinates(tile);
-				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+				for (EnumFacing dir : EnumFacing.VALUES) {
 					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 					if (!newPos.blockExists(world)) {
 						continue;
@@ -110,30 +111,30 @@ public class TEControl {
 
 	private static boolean block = false;
 
-	public static void notifyBlocksOfNeighborChange_Start(World world, int x, int y, int z) {
+	public static void notifyBlocksOfNeighborChange_Start(World world, BlockPos pos) {
 		TEControl.block = true;
 		if (!MainProxy.isServer(world)) {
 			return;
 		}
-		TEControl.handleBlockUpdate(world, LPTickHandler.getWorldInfo(world), x, y, z);
+		TEControl.handleBlockUpdate(world, LPTickHandler.getWorldInfo(world), pos);
 	}
 
-	public static void notifyBlocksOfNeighborChange_Stop(World world, int x, int y, int z) {
+	public static void notifyBlocksOfNeighborChange_Stop(World world, BlockPos pos) {
 		TEControl.block = false;
 	}
 
-	public static void notifyBlockOfNeighborChange(World world, int x, int y, int z) {
+	public static void notifyBlockOfNeighborChange(World world, BlockPos pos) {
 		if (TEControl.block) {
 			return;
 		}
-		TEControl.handleBlockUpdate(world, LPTickHandler.getWorldInfo(world), x, y, z);
+		TEControl.handleBlockUpdate(world, LPTickHandler.getWorldInfo(world), pos);
 	}
 
-	public static void handleBlockUpdate(final World world, final LPWorldInfo info, int x, int y, int z) {
+	public static void handleBlockUpdate(final World world, final LPWorldInfo info, BlockPos bpos) {
 		if (info.getWorldTick() < 5) {
 			return;
 		}
-		final DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
+		final DoubleCoordinates pos = new DoubleCoordinates(bpos);
 		if (info.getUpdateQueued().contains(pos)) {
 			return;
 		}
@@ -143,7 +144,7 @@ public class TEControl {
 		final TileEntity tile = pos.getTileEntity(world);
 		if(SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
 			QueuedTasks.queueTask(() -> {
-				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+				for (EnumFacing dir : EnumFacing.VALUES) {
 					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 					if (!newPos.blockExists(world)) {
 						continue;
@@ -162,7 +163,7 @@ public class TEControl {
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
 			info.getUpdateQueued().add(pos);
 			QueuedTasks.queueTask(() -> {
-				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+				for (EnumFacing dir : EnumFacing.VALUES) {
 					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 					if (!newPos.blockExists(world)) {
 						continue;

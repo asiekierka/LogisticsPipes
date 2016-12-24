@@ -11,19 +11,35 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
-
-apply plugin: 'forge'
-apply plugin: 'curseforge'
 
 repositories {
     maven {
-        name 'CB Repo'
-        url "http://chickenbones.net/maven/"
+        name = "OC repo"
+        url = "http://maven.cil.li"
+    }
+    maven {
+        name "Mobius Repo"
+        url "http://mobiusstrip.eu/maven"
+    }
+    maven {
+        name 'tterrag Repo'
+        url "http://maven.tterrag.com"
+    }
+    maven {
+        name = "Forestry and IC2 repo"
+        url = "http://maven.ic2.player.to"
+    }
+    maven {
+        name = "progwml6 repo"
+        url "http://dvs1.progwml6.com/files/maven"
     }
 }
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+// apply plugin: 'curseforge'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -31,7 +47,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 ant.importBuild 'download-api.xml'
 ant.importBuild 'build-ant.xml'
 
-version = "0.10.0"
+version = "0.11.0"
 group= "network.rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "logisticspipes"
 
@@ -49,10 +65,15 @@ ant.version = version
 ant.archivesBaseName = archivesBaseName
 
 minecraft {
-    version = "1.7.10-10.13.4.1448-1.7.10"
+    version = "1.10.2-12.18.3.2185"
+    mappings = "snapshot_20161111"
     runDir = "run/assets"
+
+    useDepAts = true
+    makeObfSourceJar = false
+
     replace '%VERSION%', project.version
-    replace '%MCVERSION%', "1.7.10"
+    replace '%MCVERSION%', "1.10.2"
     replace '%DEBUG%', "false"
     replaceIn "LogisticsPipes.java"
     replaceIn "LPConstants.java"
@@ -118,12 +139,25 @@ processResources {
 }
 
 dependencies {
-    compile files("build/download/buildcraft-7.1.16-dev.jar")
     compile 'org.projectlombok:lombok:1.16.8'
-    compile 'codechicken:NotEnoughItems:1.7.10-1.0.5.111:dev'
-    compile 'codechicken:CodeChickenCore:1.7.10-1.0.7.46:dev'
-    compile 'codechicken:CodeChickenLib:1.7.10-1.1.3.140:dev'
-    compile 'codechicken:EnderStorage:1.7.10-1.4.7.36:dev'
+    deobfCompile "com.enderio.core:EnderCore:1.10.2-0.4.1.39-beta"
+    deobfCompile("com.enderio:EnderIO:1.10.2-3.0.1.69_beta") {
+        exclude module: "appliedenergistics2"
+        exclude module: "buildcraft"
+        exclude module: "Waila"
+        exclude module: "forestry_1.10.2"
+        exclude module: "OpenComputers"
+        exclude module: "CodeChickenLib"
+        exclude module: "CodeChickenCore"
+        exclude module: "EquivalentExchange3"
+    }
+    deobfCompile "li.cil.oc:OpenComputers:MC1.10.2-1.6.0.4"
+    deobfCompile "mcp.mobius.waila:Waila:1.7.0-B3_1.9.4"
+    deobfCompile "net.industrial-craft:industrialcraft-2:2.6.30-ex110:dev"
+    deobfCompile("net.sengir.forestry:forestry_1.10.2:5.2.7.220") {
+        exclude module: "buildcraft"
+        exclude module: "industrialcraft-2"
+    }
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
     testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
@@ -143,28 +177,28 @@ task deobfJar(type: Jar, dependsOn: 'jar') {
     }
 }
 
-task sourceJar(type: Jar, dependsOn: 'jar') {
+task lpSourceJar(type: Jar, dependsOn: 'jar') {
     from sourceSets.main.allSource
     classifier = 'src'
 }
 
-curse {
-    displayName = 'Logistics Pipes 0.10.0 (BC7) build ' + System.getenv().BUILD_NUMBER
+// curse {
+//    displayName = 'Logistics Pipes 0.11.0 build ' + System.getenv().BUILD_NUMBER
 
-    projectId = '232838'
-    apiKey = project.hasProperty('curseForgeApiKey') ? project.curseForgeApiKey : ''
-    releaseType = 'release'
+//    projectId = '232838'
+//    apiKey = project.hasProperty('curseForgeApiKey') ? project.curseForgeApiKey : ''
+//    releaseType = 'release'
 
-    changelog = project.hasProperty('changelog') ? project.changelog : ''
-}
+//    changelog = project.hasProperty('changelog') ? project.changelog : ''
+// }
 
 artifacts {
     archives deobfJar
-    archives sourceJar
+    archives lpSourceJar
     archives jar
 }
 
 tasks.compileApiJava.dependsOn('extract')
 tasks.compileJava.dependsOn('loadFingerprints')
 tasks.processResources.dependsOn('integrateLang')
-tasks.assemble.dependsOn('deobfJar', 'sourceJar', 'signJars')
+tasks.assemble.dependsOn('deobfJar', 'lpSourceJar', 'signJars')

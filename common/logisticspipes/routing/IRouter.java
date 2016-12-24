@@ -12,7 +12,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
@@ -33,11 +33,11 @@ public interface IRouter extends LPFinalSerializable {
 
 	void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
 
-	boolean isRoutedExit(ForgeDirection connection);
+	boolean isRoutedExit(EnumFacing connection);
 
-	boolean isSubPoweredExit(ForgeDirection connection);
+	boolean isSubPoweredExit(EnumFacing connection);
 
-	int getDistanceToNextPowerPipe(ForgeDirection dir);
+	int getDistanceToNextPowerPipe(EnumFacing dir);
 
 	boolean hasRoute(int id, boolean active, ItemIdentifier type);
 
@@ -81,7 +81,7 @@ public interface IRouter extends LPFinalSerializable {
 	boolean checkAdjacentUpdate();
 
 	/* Automated Disconnection */
-	boolean isSideDisconneceted(ForgeDirection dir);
+	boolean isSideDisconneceted(EnumFacing dir);
 
 	List<ExitRoute> getDistanceTo(IRouter r);
 
@@ -96,7 +96,7 @@ public interface IRouter extends LPFinalSerializable {
 	//force-update LSA version in the network
 	void forceLsaUpdate();
 
-	List<ExitRoute> getRoutersOnSide(ForgeDirection direction);
+	List<ExitRoute> getRoutersOnSide(EnumFacing direction);
 
 	int getDimension();
 

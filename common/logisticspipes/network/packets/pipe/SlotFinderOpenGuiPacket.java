@@ -96,7 +96,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.worldObj, xCoord, yCoord, zCoord, player);
 					//@formatter:off
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
-							.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
+							.setTargetPosX(xCoord).setTargetPosY(yCoord).setTargetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
 					//@formatter:on
 				}
 
@@ -104,7 +104,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 					if (block.onBlockActivated(player.worldObj, xCoord, yCoord, zCoord, player, 0, 0, 0, 0)) {
 						//@formatter:off
 						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
-								.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
+								.setTargetPosX(xCoord).setTargetPosY(yCoord).setTargetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
 						//@formatter:on
 						break;
 					}

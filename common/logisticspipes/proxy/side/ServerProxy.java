@@ -32,7 +32,7 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -40,8 +40,8 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.server.FMLServerHandler;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
 public class ServerProxy implements IProxy {
 
@@ -239,7 +239,7 @@ public class ServerProxy implements IProxy {
 		if (server != null && server.getConfigurationManager() != null) {
 			List list = server.getConfigurationManager().playerEntityList;
 			if (list != null && !list.isEmpty()) {
-				list.stream().filter(obj -> obj instanceof EntityPlayerMP).forEach(obj -> ((EntityPlayerMP) obj).addChatMessage(new ChatComponentText("[LP] Server: " + message)));
+				list.stream().filter(obj -> obj instanceof EntityPlayerMP).forEach(obj -> ((EntityPlayerMP) obj).addChatMessage(new TextComponentString("[LP] Server: " + message)));
 			}
 		}
 	}

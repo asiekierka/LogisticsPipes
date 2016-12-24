@@ -20,6 +20,8 @@
 
 package network.rs485.logisticspipes.world;
 
+import net.minecraft.util.math.BlockPos;
+
 public interface ICoordinates {
 
 	double getXDouble();
@@ -33,4 +35,6 @@ public interface ICoordinates {
 	int getYInt();
 
 	int getZInt();
+
+	BlockPos getBlockPos();
 }

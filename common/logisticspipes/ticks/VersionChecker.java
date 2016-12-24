@@ -14,8 +14,8 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import lombok.Data;
 
 import logisticspipes.LPConstants;

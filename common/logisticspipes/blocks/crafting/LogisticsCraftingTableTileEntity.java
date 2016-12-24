@@ -69,7 +69,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 		List<IRecipe> list = new ArrayList<>();
 		for (IRecipe r : CraftingUtil.getRecipeList()) {
-			if (r.matches(craftInv, getWorldObj())) {
+			if (r.matches(craftInv, getWorld())) {
 				list.add(r);
 			}
 		}
@@ -107,7 +107,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			targetType = null;
 		}
 		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
-		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType))) && !guiWatcher.isEmpty() && getWorldObj() != null && MainProxy.isServer(getWorldObj())) {
+		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType))) && !guiWatcher.isEmpty() && getWorld() != null && MainProxy.isServer(getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
 		}
 	}
@@ -124,7 +124,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 		List<IRecipe> list = new ArrayList<>();
 		for (IRecipe r : CraftingUtil.getRecipeList()) {
-			if (r.matches(craftInv, getWorldObj())) {
+			if (r.matches(craftInv, getWorld())) {
 				list.add(r);
 			}
 		}
@@ -163,7 +163,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			}
 			targetType = ItemIdentifier.get(cache.getCraftingResult(craftInv));
 		}
-		if (!guiWatcher.isEmpty() && getWorldObj() != null && MainProxy.isServer(getWorldObj())) {
+		if (!guiWatcher.isEmpty() && getWorld() != null && MainProxy.isServer(getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
 		}
 		cacheRecipe();
@@ -217,11 +217,11 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 		IRecipe recipe = cache;
 		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
-		if (!recipe.matches(crafter, getWorldObj())) {
+		if (!recipe.matches(crafter, getWorld())) {
 			if(isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
 				recipe = null;
 				for (IRecipe r : CraftingUtil.getRecipeList()) {
-					if (r.matches(crafter, getWorldObj()) && outputFuzzyFlags.matches(ItemIdentifier.get(r.getRecipeOutput()), IResource.MatchSettings.NORMAL)) {
+					if (r.matches(crafter, getWorld()) && outputFuzzyFlags.matches(ItemIdentifier.get(r.getRecipeOutput()), IResource.MatchSettings.NORMAL)) {
 						recipe = r;
 						break;
 					}

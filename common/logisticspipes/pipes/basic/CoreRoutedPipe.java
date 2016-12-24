@@ -32,10 +32,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
@@ -136,7 +136,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	public final PlayerCollectionList watchers = new PlayerCollectionList();
 	protected final PriorityBlockingQueue<ItemRoutingInformation> _inTransitToMe = new PriorityBlockingQueue<>(10,
 			new ItemRoutingInformation.DelayComparator());
-	protected final LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<>();
+	protected final LinkedList<Triplet<IRoutedItem, EnumFacing, ItemSendMode>> _sendQueue = new LinkedList<>();
 	protected final Map<ItemIdentifier, Queue<Pair<Integer, ItemRoutingInformation>>> queuedDataForUnroutedItems = Collections.synchronizedMap(new TreeMap<>());
 	public boolean _textureBufferPowered;
 	public long delayTo = 0;
@@ -160,7 +160,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	protected UpgradeManager upgradeManager = new UpgradeManager(this);
 	protected LogisticsItemOrderManager _orderItemManager = null;
 	protected List<IInventory> _cachedAdjacentInventories;
-	protected ForgeDirection pointedDirection = ForgeDirection.UNKNOWN;
+	protected EnumFacing pointedDirection = EnumFacing.UNKNOWN;
 	//public BaseRoutingLogic logic;
 	// from BaseRoutingLogic
 	protected int throttleTime = 20;
@@ -221,7 +221,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
-	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+	public void queueRoutedItem(IRoutedItem routedItem, EnumFacing from) {
 		if (from == null) {
 			throw new NullPointerException();
 		}
@@ -229,7 +229,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		sendQueueChanged(false);
 	}
 
-	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from, ItemSendMode mode) {
+	public void queueRoutedItem(IRoutedItem routedItem, EnumFacing from, ItemSendMode mode) {
 		if (from == null) {
 			throw new NullPointerException();
 		}
@@ -245,7 +245,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return 0;
 	}
 
-	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+	private void sendRoutedItem(IRoutedItem routedItem, EnumFacing from) {
 
 		if (from == null) {
 			throw new NullPointerException();
@@ -353,7 +353,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			stillNeedReplace = false;
 			getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlock(getX(), getY(), getZ()));
 			/* TravelingItems are just held by a pipe, they don't need to know their world
-			 * for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
+			 * for(Triplet<IRoutedItem, EnumFacing, ItemSendMode> item : _sendQueue) {
 				//assign world to any entityitem we created in readfromnbt
 				item.getValue1().getTravelingItem().setWorld(getWorld());
 			}*/
@@ -397,7 +397,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()) {
 			if (getItemSendMode() == ItemSendMode.Normal) {
-				Triplet<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
+				Triplet<IRoutedItem, EnumFacing, ItemSendMode> itemToSend = _sendQueue.getFirst();
 				sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 				_sendQueue.removeFirst();
 				for (int i = 0; i < 16 && !_sendQueue.isEmpty() && _sendQueue.getFirst().getValue3() == ItemSendMode.Fast; i++) {
@@ -411,7 +411,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			} else if (getItemSendMode() == ItemSendMode.Fast) {
 				for (int i = 0; i < 16; i++) {
 					if (!_sendQueue.isEmpty()) {
-						Triplet<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
+						Triplet<IRoutedItem, EnumFacing, ItemSendMode> itemToSend = _sendQueue.getFirst();
 						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 						_sendQueue.removeFirst();
 					}
@@ -505,7 +505,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 		System.out.println();
 		System.out.println("++++++++++CONNECTIONS+++++++++++++++");
-		System.out.println(Arrays.toString(ForgeDirection.VALID_DIRECTIONS));
+		System.out.println(Arrays.toString(EnumFacing.VALUES));
 		System.out.println(Arrays.toString(sr.sideDisconnected));
 		System.out.println(Arrays.toString(container.pipeConnectionsBuffer));
 		System.out.println();
@@ -591,12 +591,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	public abstract TextureType getCenterTexture();
 
-	public TextureType getTextureType(ForgeDirection connection) {
+	public TextureType getTextureType(EnumFacing connection) {
 		if (stillNeedReplace || _initialInit) {
 			return getCenterTexture();
 		}
 
-		if (connection == ForgeDirection.UNKNOWN) {
+		if (connection == EnumFacing.UNKNOWN) {
 			return getCenterTexture();
 		} else if ((router != null) && getRouter().isRoutedExit(connection)) {
 			return getRoutedTexture(connection);
@@ -623,7 +623,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 	}
 
-	public TextureType getRoutedTexture(ForgeDirection connection) {
+	public TextureType getRoutedTexture(EnumFacing connection) {
 		if (getRouter().isSubPoweredExit(connection)) {
 			return Textures.LOGISTICSPIPE_SUBPOWER_TEXTURE;
 		} else {
@@ -631,7 +631,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 	}
 
-	public TextureType getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(EnumFacing connection) {
 		if (isPowerProvider(connection)) {
 			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
@@ -675,7 +675,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		hasQueuedParticles = false;
 	}
 
-	protected boolean isPowerProvider(ForgeDirection ori) {
+	protected boolean isPowerProvider(EnumFacing ori) {
 		TileEntity tilePipe = container.getTile(ori);
 		if (tilePipe == null || !container.canPipeConnect(tilePipe, ori)) {
 			return false;
@@ -715,7 +715,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 
 		NBTTagList sendqueue = new NBTTagList();
-		for (Triplet<IRoutedItem, ForgeDirection, ItemSendMode> p : _sendQueue) {
+		for (Triplet<IRoutedItem, EnumFacing, ItemSendMode> p : _sendQueue) {
 			NBTTagCompound tagentry = new NBTTagCompound();
 			NBTTagCompound tagentityitem = new NBTTagCompound();
 			p.getValue1().writeToNBT(tagentityitem);
@@ -770,7 +770,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			NBTTagCompound tagentry = sendqueue.getCompoundTagAt(i);
 			NBTTagCompound tagentityitem = tagentry.getCompoundTag("entityitem");
 			LPTravelingItemServer item = new LPTravelingItemServer(tagentityitem);
-			ForgeDirection from = ForgeDirection.values()[tagentry.getByte("from")];
+			EnumFacing from = EnumFacing.values()[tagentry.getByte("from")];
 			ItemSendMode mode = ItemSendMode.values()[tagentry.getByte("mode")];
 			_sendQueue.add(new Triplet<>(item, from, mode));
 		}
@@ -780,7 +780,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				Class<? extends IPipeSign> typeClass = ItemPipeSignCreator.signTypes.get(type);
 				try {
 					signItem[i] = typeClass.newInstance();
-					signItem[i].init(this, ForgeDirection.getOrientation(i));
+					signItem[i].init(this, EnumFacing.getOrientation(i));
 					signItem[i].readFromNBT(nbttagcompound.getCompoundTag("PipeSign_" + i + "_tags"));
 				} catch (InstantiationException | IllegalAccessException e) {
 					throw new RuntimeException(e);
@@ -852,7 +852,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				if (settings == null || settings.openNetworkMonitor) {
 					NewGuiHandler.getGui(PipeController.class).setTilePos(container).open(entityplayer);
 				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;
@@ -886,7 +886,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				if (settings == null || settings.openRequest) {
 					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
 				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;
@@ -902,7 +902,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 						onWrenchClicked(entityplayer);
 					}
 				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());
@@ -991,26 +991,26 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 	}
 
-	public boolean isLockedExit(ForgeDirection orientation) {
+	public boolean isLockedExit(EnumFacing orientation) {
 		return false;
 	}
 
-	public boolean logisitcsIsPipeConnected(TileEntity tile, ForgeDirection dir) {
+	public boolean logisitcsIsPipeConnected(TileEntity tile, EnumFacing dir) {
 		return false;
 	}
 
-	public boolean disconnectPipe(TileEntity tile, ForgeDirection dir) {
+	public boolean disconnectPipe(TileEntity tile, EnumFacing dir) {
 		return false;
 	}
 
 	@Override
-	public final boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
+	public final boolean canPipeConnect(TileEntity tile, EnumFacing dir) {
 		return canPipeConnect(tile, dir, false);
 	}
 
 	@Override
-	public final boolean canPipeConnect(TileEntity tile, ForgeDirection dir, boolean ignoreSystemDisconnection) {
-		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
+	public final boolean canPipeConnect(TileEntity tile, EnumFacing dir, boolean ignoreSystemDisconnection) {
+		EnumFacing side = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
 		if (isSideBlocked(side, ignoreSystemDisconnection)) {
 			return false;
 		}
@@ -1018,11 +1018,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
-	public final boolean isSideBlocked(ForgeDirection side, boolean ignoreSystemDisconnection) {
+	public final boolean isSideBlocked(EnumFacing side, boolean ignoreSystemDisconnection) {
 		if (getUpgradeManager().isSideDisconnected(side)) {
 			return true;
 		}
-		if (container != null && side != ForgeDirection.UNKNOWN && container.tilePart.hasBlockingPluggable(side)) {
+		if (container != null && side != EnumFacing.UNKNOWN && container.tilePart.hasBlockingPluggable(side)) {
 			return true;
 		}
 		if (!stillNeedReplace) {
@@ -1314,7 +1314,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
-	public final int getIconIndex(ForgeDirection connection) {
+	public final int getIconIndex(EnumFacing connection) {
 		TextureType texture = getTextureType(connection);
 		if (_textureBufferPowered) {
 			return texture.powered;
@@ -1510,7 +1510,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	@Override
 	public IInventoryUtil getSneakyInventory(boolean forExtraction, ModulePositionType slot, int positionInt) {
 		ISlotUpgradeManager manager = getUpgradeManager(slot, positionInt);
-		ForgeDirection insertion = getPointedOrientation().getOpposite();
+		EnumFacing insertion = getPointedOrientation().getOpposite();
 		if (manager.hasSneakyUpgrade()) {
 			insertion = manager.getSneakyOrientation();
 		}
@@ -1518,7 +1518,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation, boolean forExtraction) {
+	public IInventoryUtil getSneakyInventory(EnumFacing _sneakyOrientation, boolean forExtraction) {
 		IInventory inv = getRealInventory();
 		if (inv == null) {
 			return null;
@@ -1551,14 +1551,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	private TileEntity getPointedTileEntity() {
-		if (pointedDirection == ForgeDirection.UNKNOWN) {
+		if (pointedDirection == EnumFacing.UNKNOWN) {
 			return null;
 		}
 		return getContainer().getTile(pointedDirection);
 	}
 
 	@Override
-	public ForgeDirection inventoryOrientation() {
+	public EnumFacing inventoryOrientation() {
 		return getPointedOrientation();
 	}
 
@@ -1601,7 +1601,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return itemToSend;
 	}
 
-	public ForgeDirection getPointedOrientation() {
+	public EnumFacing getPointedOrientation() {
 		return pointedDirection;
 	}
 
@@ -1615,7 +1615,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return getItemOrderManager();
 	}
 
-	public void addPipeSign(ForgeDirection dir, IPipeSign type, EntityPlayer player) {
+	public void addPipeSign(EnumFacing dir, IPipeSign type, EntityPlayer player) {
 		if (dir.ordinal() < 6) {
 			if (signItem[dir.ordinal()] == null) {
 				signItem[dir.ordinal()] = type;
@@ -1657,21 +1657,21 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		refreshRender(false);
 	}
 
-	public void removePipeSign(ForgeDirection dir, EntityPlayer player) {
+	public void removePipeSign(EnumFacing dir, EntityPlayer player) {
 		if (dir.ordinal() < 6) {
 			signItem[dir.ordinal()] = null;
 		}
 		sendSignData(player);
 	}
 
-	public boolean hasPipeSign(ForgeDirection dir) {
+	public boolean hasPipeSign(EnumFacing dir) {
 		if (dir.ordinal() < 6) {
 			return signItem[dir.ordinal()] != null;
 		}
 		return false;
 	}
 
-	public void activatePipeSign(ForgeDirection dir, EntityPlayer player) {
+	public void activatePipeSign(EnumFacing dir, EntityPlayer player) {
 		if (dir.ordinal() < 6) {
 			if (signItem[dir.ordinal()] != null) {
 				signItem[dir.ordinal()].activate(player);
@@ -1679,11 +1679,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 	}
 
-	public List<Pair<ForgeDirection, IPipeSign>> getPipeSigns() {
-		List<Pair<ForgeDirection, IPipeSign>> list = new ArrayList<>();
+	public List<Pair<EnumFacing, IPipeSign>> getPipeSigns() {
+		List<Pair<EnumFacing, IPipeSign>> list = new ArrayList<>();
 		for (int i = 0; i < 6; i++) {
 			if (signItem[i] != null) {
-				list.add(new Pair<>(ForgeDirection.getOrientation(i), signItem[i]));
+				list.add(new Pair<>(EnumFacing.getOrientation(i), signItem[i]));
 			}
 		}
 		return list;
@@ -1700,7 +1700,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				if (signItem[i] == null || signItem[i].getClass() != type) {
 					try {
 						signItem[i] = type.newInstance();
-						signItem[i].init(this, ForgeDirection.getOrientation(i));
+						signItem[i].init(this, EnumFacing.getOrientation(i));
 					} catch (InstantiationException | IllegalAccessException e) {
 						throw new RuntimeException(e);
 					}
@@ -1711,7 +1711,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 	}
 
-	public IPipeSign getPipeSign(ForgeDirection dir) {
+	public IPipeSign getPipeSign(EnumFacing dir) {
 		if (dir.ordinal() < 6) {
 			return signItem[dir.ordinal()];
 		}
@@ -1742,7 +1742,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		StatusEntry entry = new StatusEntry();
 		entry.name = "Send Queue";
 		entry.subEntry = new ArrayList<>();
-		for (Triplet<IRoutedItem, ForgeDirection, ItemSendMode> part : _sendQueue) {
+		for (Triplet<IRoutedItem, EnumFacing, ItemSendMode> part : _sendQueue) {
 			StatusEntry subEntry = new StatusEntry();
 			subEntry.name = part.toString();
 			entry.subEntry.add(subEntry);
@@ -1780,7 +1780,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max,
+	public double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double traveled, double max,
 			List<DoubleCoordinates> visited) {
 		if (!stillNeedReplace) {
 			if (getRouterId() == destinationint) {

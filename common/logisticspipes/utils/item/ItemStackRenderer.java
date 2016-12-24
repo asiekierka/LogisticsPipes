@@ -24,7 +24,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.item.EntityItem;
@@ -71,10 +71,10 @@ public class ItemStackRenderer {
 		this.renderEffects = renderEffects;
 		this.ignoreDepth = ignoreDepth;
 		this.renderInColor = renderInColor;
-		renderManager = RenderManager.instance;
+		renderManager = Minecraft.getMinecraft().getRenderManager();
 		fontRenderer = renderManager.getFontRenderer();
 		if (fontRenderer == null) {
-			fontRenderer = Minecraft.getMinecraft().fontRenderer;
+			fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 		}
 		worldObj = renderManager.worldObj;
 		texManager = renderManager.renderEngine;
@@ -82,7 +82,7 @@ public class ItemStackRenderer {
 			texManager = Minecraft.getMinecraft().getTextureManager();
 		}
 		renderBlocks = RenderBlocks.getInstance();
-		renderItem = RenderItem.getInstance();
+		renderItem = Minecraft.getMinecraft().getRenderItem();
 		scaleX = 1.0F;
 		scaleY = 1.0F;
 		scaleZ = 1.0F;
@@ -243,7 +243,7 @@ public class ItemStackRenderer {
 
 		Item item = itemstack.getItem();
 		if (item instanceof ItemBlock) {
-			Block block = ((ItemBlock) item).field_150939_a;
+			Block block = ((ItemBlock) item).getBlock();
 			if (block instanceof BlockPane) {
 				GL11.glScalef(0.5F, 0.5F, 0.5F);
 			}

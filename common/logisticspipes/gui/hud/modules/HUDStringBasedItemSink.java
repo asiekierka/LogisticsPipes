@@ -10,7 +10,7 @@ import logisticspipes.utils.gui.hud.BasicHUDButton;
 
 import net.minecraft.client.Minecraft;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class HUDStringBasedItemSink implements IHUDModuleRenderer {
 

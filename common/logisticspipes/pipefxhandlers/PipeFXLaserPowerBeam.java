@@ -5,24 +5,24 @@ import java.util.Random;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.lwjgl.opengl.GL11;
 
 @Accessors(chain = true)
-public class PipeFXLaserPowerBeam extends EntityFX {
+public class PipeFXLaserPowerBeam extends Particle {
 
 	private static final ResourceLocation beam = new ResourceLocation("logisticspipes", "textures/particles/laserBeam.png");
 	private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
@@ -37,7 +37,7 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 	private float random = 0;
 	private TileEntity tile;
 
-	public PipeFXLaserPowerBeam(World par1World, DoubleCoordinates pos, float length, ForgeDirection dir, int color, TileEntity tile) {
+	public PipeFXLaserPowerBeam(World par1World, DoubleCoordinates pos, float length, EnumFacing dir, int color, TileEntity tile) {
 		super(par1World, pos.getXCoord() + 0.5D, pos.getYCoord() + 0.5D, pos.getZCoord() + 0.5D, 0.0D, 0.0D, 0.0D);
 		setSize(0.02F, 0.02F);
 		this.tile = tile;
@@ -96,9 +96,9 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glDepthMask(false);
 
-		double x = posX - EntityFX.interpPosX;
-		double y = posY - EntityFX.interpPosY;
-		double z = posZ - EntityFX.interpPosZ;
+		double x = posX - Particle.interpPosX;
+		double y = posY - Particle.interpPosY;
+		double z = posZ - Particle.interpPosZ;
 		GL11.glTranslated(x, y, z);
 
 		GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);

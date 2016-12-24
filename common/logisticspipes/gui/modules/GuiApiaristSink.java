@@ -18,8 +18,8 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.opengl.GL11;
 
@@ -43,7 +43,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 
 	public void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
 		GL11.glDisable(GL11.GL_LIGHTING);
-		mc.renderEngine.bindTexture(TextureMap.locationItemsTexture);
+		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
 			IIcon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);

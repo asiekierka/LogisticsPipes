@@ -20,15 +20,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
@@ -136,14 +136,14 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
-	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
+	public RayTraceResult collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			for(LogisticsTileGenericPipe mainPipe:mainPipeList) {
 				if (mainPipe != null && mainPipe.pipe != null && mainPipe.pipe.isMultiBlock()) {
-					MovingObjectPosition result = LogisticsPipes.LogisticsPipeBlock.collisionRayTrace(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, origin, direction);
+					RayTraceResult result = LogisticsPipes.LogisticsPipeBlock.collisionRayTrace(world, mainPipe.xCoord, mainPipe.yCoord, mainPipe.zCoord, origin, direction);
 					if (result != null) {
 						result.blockX = x;
 						result.blockY = y;
@@ -202,7 +202,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
+	public ItemStack getPickBlock(RayTraceResult target, World world, int x, int y, int z, EntityPlayer player) {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
@@ -220,7 +220,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
+	public ItemStack getPickBlock(RayTraceResult target, World world, int x, int y, int z) {
 		DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
 		TileEntity tile = pos.getTileEntity(world);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
@@ -240,7 +240,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
-	public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer) {
+	public boolean addHitEffects(World worldObj, RayTraceResult target, EffectRenderer effectRenderer) {
 		int x = target.blockX;
 		int y = target.blockY;
 		int z = target.blockZ;

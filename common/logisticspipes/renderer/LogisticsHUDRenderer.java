@@ -11,13 +11,13 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.client.GuiIngameForge;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -313,7 +313,7 @@ public class LogisticsHUDRenderer {
 		}
 
 		GL11.glPushMatrix();
-		MovingObjectPosition box = mc.objectMouseOver;
+		RayTraceResult box = mc.objectMouseOver;
 		if (box != null && box.typeOfHit == MovingObjectType.BLOCK) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				progress = Math.min(progress + (2 * Math.max(1, (int) Math.floor((System.currentTimeMillis() - last) / 50.0D))), 100);

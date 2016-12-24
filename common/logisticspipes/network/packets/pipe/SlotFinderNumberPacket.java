@@ -9,9 +9,9 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentTranslation;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -57,7 +57,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		IInventory inv = this.getTile(player.worldObj, IInventory.class);
 		if (inv instanceof ISidedInventory) {
-			inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN, false);
+			inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, EnumFacing.UNKNOWN, false);
 		}
 		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 		Slot result = null;
@@ -73,7 +73,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 			}
 		}
 		if (result == null) {
-			player.addChatComponentMessage(new ChatComponentTranslation("lp.chat.slotnotfound"));
+			player.addChatComponentMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
 		}
 		int resultIndex = -1;
 		if (resultIndex == -1) {
@@ -113,7 +113,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 			}
 		}
 		if (resultIndex == -1) {
-			player.addChatComponentMessage(new ChatComponentTranslation("lp.chat.slotnotfound"));
+			player.addChatComponentMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
 		} else {
 			//Copy pipe to coordinates to use the getPipe method
 			setPosX(getPipePosX());

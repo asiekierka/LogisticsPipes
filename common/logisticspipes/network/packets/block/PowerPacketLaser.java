@@ -2,7 +2,7 @@ package logisticspipes.network.packets.block;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +17,7 @@ public class PowerPacketLaser extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private ForgeDirection dir;
+	private EnumFacing dir;
 	@Getter
 	@Setter
 	private int color;
@@ -42,7 +42,7 @@ public class PowerPacketLaser extends CoordinatesPacket {
 	public void readData(LPDataInput input) {
 		super.readData(input);
 		length = input.readFloat();
-		dir = input.readForgeDirection();
+		dir = input.readEnumFacing();
 		color = input.readInt();
 		reverse = input.readBoolean();
 		renderBall = input.readBoolean();
@@ -63,7 +63,7 @@ public class PowerPacketLaser extends CoordinatesPacket {
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeFloat(length);
-		output.writeForgeDirection(dir);
+		output.writeEnumFacing(dir);
 		output.writeInt(color);
 		output.writeBoolean(reverse);
 		output.writeBoolean(renderBall);

@@ -4,14 +4,14 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
-public class EntitySparkleFX extends EntityFX {
+public class EntitySparkleFX extends Particle {
 
 	public int multiplier;
 	public boolean shrink;
@@ -53,9 +53,9 @@ public class EntitySparkleFX extends EntityFX {
 		float var11 = var8 / 8 / 8.0F;
 		float var12 = var11 + 0.124875F;
 		float var13 = 0.1F * particleScale * ((float) (particleMaxAge - particleAge + 1) / (float) particleMaxAge);
-		float var14 = (float) (prevPosX + (posX - prevPosX) * var2 - EntityFX.interpPosX);
-		float var15 = (float) (prevPosY + (posY - prevPosY) * var2 - EntityFX.interpPosY);
-		float var16 = (float) (prevPosZ + (posZ - prevPosZ) * var2 - EntityFX.interpPosZ);
+		float var14 = (float) (prevPosX + (posX - prevPosX) * var2 - Particle.interpPosX);
+		float var15 = (float) (prevPosY + (posY - prevPosY) * var2 - Particle.interpPosY);
+		float var16 = (float) (prevPosZ + (posZ - prevPosZ) * var2 - Particle.interpPosZ);
 		float var17 = 1.0F;
 		var1.startDrawingQuads();
 		var1.setBrightness(240);

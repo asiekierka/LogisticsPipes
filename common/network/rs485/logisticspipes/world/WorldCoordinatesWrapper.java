@@ -33,7 +33,7 @@ import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -74,7 +74,7 @@ public class WorldCoordinatesWrapper {
 	}
 
 	public Stream<AdjacentTileEntity> getAdjacentTileEntities() {
-		return Arrays.stream(ForgeDirection.VALID_DIRECTIONS).map(this::getAdjacentFromDirection).filter(tile -> tile != null);
+		return Arrays.stream(EnumFacing.VALUES).map(this::getAdjacentFromDirection).filter(tile -> tile != null);
 	}
 
 	public Stream<AdjacentTileEntity> getConnectedAdjacentTileEntities() {
@@ -105,7 +105,7 @@ public class WorldCoordinatesWrapper {
 		return world.getBlock(coords.getXCoord(), coords.getYCoord(), coords.getZCoord());
 	}
 
-	public AdjacentTileEntity getAdjacentFromDirection(ForgeDirection direction) {
+	public AdjacentTileEntity getAdjacentFromDirection(EnumFacing direction) {
 		IntegerCoordinates newCoords = CoordinateUtils.add(new IntegerCoordinates(coords), direction);
 		return new AdjacentTileEntity(world.getTileEntity(newCoords.getXCoord(), newCoords.getYCoord(), newCoords.getZCoord()), direction);
 	}
@@ -114,6 +114,6 @@ public class WorldCoordinatesWrapper {
 	public static class AdjacentTileEntity {
 
 		public TileEntity tileEntity;
-		public ForgeDirection direction;
+		public EnumFacing direction;
 	}
 }

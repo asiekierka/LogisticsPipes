@@ -2,7 +2,7 @@ package logisticspipes.routing;
 
 import java.util.EnumSet;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class LaserData {
 	@NonNull
 	private int posZ;
 	@NonNull
-	private ForgeDirection dir;
+	private EnumFacing dir;
 	@NonNull
 	private EnumSet<PipeRoutingConnectionType> connectionType;
 	private boolean finalPipe = true;
@@ -50,7 +50,7 @@ public class LaserData {
 		posX = input.readInt();
 		posY = input.readInt();
 		posZ = input.readInt();
-		dir = ForgeDirection.values()[input.readByte()];
+		dir = EnumFacing.values()[input.readByte()];
 		finalPipe = input.readBoolean();
 		startPipe = input.readBoolean();
 		length = input.readInt();

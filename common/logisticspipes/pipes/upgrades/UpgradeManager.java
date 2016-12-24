@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 
@@ -43,10 +43,10 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	private int securityDelay = 0;
 
 	/* cached attributes */
-	private ForgeDirection sneakyOrientation = ForgeDirection.UNKNOWN;
-	private ForgeDirection[] combinedSneakyOrientation = new ForgeDirection[9];
+	private EnumFacing sneakyOrientation = EnumFacing.UNKNOWN;
+	private EnumFacing[] combinedSneakyOrientation = new EnumFacing[9];
 	private int speedUpgradeCount = 0;
-	private final EnumSet<ForgeDirection> disconnectedSides = EnumSet.noneOf(ForgeDirection.class);
+	private final EnumSet<EnumFacing> disconnectedSides = EnumSet.noneOf(EnumFacing.class);
 	private boolean isAdvancedCrafter = false;
 	private boolean isFuzzyUpgrade = false;
 	private boolean isCombinedSneakyUpgrade = false;
@@ -125,7 +125,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			}
 		}
 		//update sneaky direction, speed upgrade count and disconnection
-		sneakyOrientation = ForgeDirection.UNKNOWN;
+		sneakyOrientation = EnumFacing.UNKNOWN;
 		speedUpgradeCount = 0;
 		isAdvancedCrafter = false;
 		isFuzzyUpgrade = false;
@@ -147,9 +147,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		guiUpgrades = new boolean[18];
 		for (int i = 0; i < upgrades.length; i++) {
 			IPipeUpgrade upgrade = upgrades[i];
-			if (upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
+			if (upgrade instanceof SneakyUpgrade && sneakyOrientation == EnumFacing.UNKNOWN && !isCombinedSneakyUpgrade) {
 				sneakyOrientation = ((SneakyUpgrade) upgrade).getSneakyOrientation();
-			} else if(upgrade instanceof SneakyUpgradeConfig && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
+			} else if(upgrade instanceof SneakyUpgradeConfig && sneakyOrientation == EnumFacing.UNKNOWN && !isCombinedSneakyUpgrade) {
 				ItemStack stack = getInv().getStackInSlot(i);
 				sneakyOrientation = ((SneakyUpgradeConfig) upgrade).getSide(stack);
 			} else if (upgrade instanceof SpeedUpgrade) {
@@ -163,7 +163,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				isAdvancedCrafter = true;
 			} else if (upgrade instanceof FuzzyUpgrade) {
 				isFuzzyUpgrade = true;
-			} else if (upgrade instanceof CombinedSneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN) {
+			} else if (upgrade instanceof CombinedSneakyUpgrade && sneakyOrientation == EnumFacing.UNKNOWN) {
 				isCombinedSneakyUpgrade = true;
 			} else if (upgrade instanceof FluidCraftingUpgrade) {
 				liquidCrafter += inv.getStackInSlot(i).stackSize;
@@ -248,11 +248,11 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 
 	@Override
 	public boolean hasSneakyUpgrade() {
-		return sneakyOrientation != ForgeDirection.UNKNOWN;
+		return sneakyOrientation != EnumFacing.UNKNOWN;
 	}
 
 	@Override
-	public ForgeDirection getSneakyOrientation() {
+	public EnumFacing getSneakyOrientation() {
 		return sneakyOrientation;
 	}
 
@@ -267,7 +267,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	}
 
 	@Override
-	public ForgeDirection[] getCombinedSneakyOrientation() {
+	public EnumFacing[] getCombinedSneakyOrientation() {
 		return combinedSneakyOrientation;
 	}
 
@@ -303,7 +303,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	}
 
 	@Override
-	public boolean isSideDisconnected(ForgeDirection side) {
+	public boolean isSideDisconnected(EnumFacing side) {
 		return disconnectedSides.contains(side);
 	}
 

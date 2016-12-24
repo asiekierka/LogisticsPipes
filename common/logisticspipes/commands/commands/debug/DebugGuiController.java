@@ -11,7 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 
@@ -173,7 +173,7 @@ public class DebugGuiController {
 	private class ObjectIdentification implements IObjectIdentification {
 		@Override
 		public boolean toStringObject(Object o) {
-			return o.getClass() == ForgeDirection.class || o.getClass() == ItemIdentifier.class || o.getClass() == ItemIdentifierStack.class;
+			return o.getClass() == EnumFacing.class || o.getClass() == ItemIdentifier.class || o.getClass() == ItemIdentifierStack.class;
 		}
 
 		@Override

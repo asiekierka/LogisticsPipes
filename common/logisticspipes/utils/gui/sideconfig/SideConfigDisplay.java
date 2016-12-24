@@ -11,6 +11,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GLAllocation;
@@ -24,19 +25,20 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -134,7 +136,7 @@ public abstract class SideConfigDisplay {
 		distance = Math.max(Math.max(size.x, size.y), size.z) + 4;
 
 		for (DoubleCoordinates bc : configurables) {
-			for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing dir : EnumFacing.VALUES) {
 				DoubleCoordinates loc = CoordinateUtils.add(new DoubleCoordinates(bc), dir);
 				if (!configurables.contains(loc)) {
 					neighbours.add(loc);
@@ -214,40 +216,37 @@ public abstract class SideConfigDisplay {
 	private void updateSelection(Vector3d start, Vector3d end) {
 		start.add(origin);
 		end.add(origin);
-		List<MovingObjectPosition> hits = new ArrayList<>();
+		List<RayTraceResult> hits = new ArrayList<>();
 
 		LogisticsBlockGenericPipe.ignoreSideRayTrace = true;
 		for (DoubleCoordinates bc : configurables) {
-			Block block = world.getBlock(bc.getXInt(), bc.getYInt(), bc.getZInt());
-			if (block != null) {
-				if(block instanceof LogisticsBlockGenericPipe) {
-					cachedLPBlockTrace = LogisticsPipes.LogisticsPipeBlock.doRayTrace(world, bc.getXInt(), bc.getYInt(), bc.getZInt(), Vec3.createVectorHelper(start.x, start.y, start.z), Vec3.createVectorHelper(end.x, end.y, end.z));
-				} else {
-					cachedLPBlockTrace = null;
-				}
-				MovingObjectPosition hit = block.collisionRayTrace(world, bc.getXInt(), bc.getYInt(), bc.getZInt(), Vec3.createVectorHelper(start.x, start.y, start.z), Vec3.createVectorHelper(end.x, end.y, end.z));
-				if (hit != null) {
-					hits.add(hit);
-				}
+			IBlockState state = world.getBlockState(bc.getBlockPos());
+			if (state.getBlock() instanceof LogisticsBlockGenericPipe) {
+				cachedLPBlockTrace = LogisticsPipes.LogisticsPipeBlock.doRayTrace(world, bc.getBlockPos(), new Vec3d(start.x, start.y, start.z), new Vec3d(end.x, end.y, end.z));
+			} else {
+				cachedLPBlockTrace = null;
+			}
+			RayTraceResult hit = state.collisionRayTrace(world, bc.getBlockPos(), new Vec3d(start.x, start.y, start.z), new Vec3d(end.x, end.y, end.z));
+			if (hit != null) {
+				hits.add(hit);
 			}
 		}
 		LogisticsBlockGenericPipe.ignoreSideRayTrace = false;
 		selection = null;
-		MovingObjectPosition hit = getClosestHit(Vec3.createVectorHelper(start.x, start.y, start.z), hits);
+		RayTraceResult hit = getClosestHit(new Vec3d(start.x, start.y, start.z), hits);
 		if (hit != null) {
-			TileEntity te = world.getTileEntity(hit.blockX, hit.blockY, hit.blockZ);
+			TileEntity te = world.getTileEntity(hit.getBlockPos());
 			if(te != null) {
-				ForgeDirection face = ForgeDirection.getOrientation(hit.sideHit);
-				selection = new SelectedFace(te, face, hit);
+				selection = new SelectedFace(te, hit.sideHit, hit);
 			}
 		}
 	}
 
-	public static MovingObjectPosition getClosestHit(Vec3 origin, Collection<MovingObjectPosition> candidates) {
+	public static RayTraceResult getClosestHit(Vec3d origin, Collection<RayTraceResult> candidates) {
 		double minLengthSquared = Double.POSITIVE_INFINITY;
-		MovingObjectPosition closest = null;
+		RayTraceResult closest = null;
 
-		for (MovingObjectPosition hit : candidates) {
+		for (RayTraceResult hit : candidates) {
 			if (hit != null) {
 				double lengthSquared = hit.hitVec.squareDistanceTo(origin);
 				if (lengthSquared < minLengthSquared) {
@@ -286,7 +285,7 @@ public abstract class SideConfigDisplay {
 		GL11.glPopMatrix();
 
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		if (selection.hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
+		if (selection.hit.typeOfHit == RayTraceResult.MovingObjectType.BLOCK)
 		{
 			GL11.glEnable(GL11.GL_BLEND);
 			OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -512,10 +511,10 @@ public abstract class SideConfigDisplay {
 	public static class SelectedFace {
 
 		public TileEntity config;
-		public ForgeDirection face;
-		public MovingObjectPosition hit;
+		public EnumFacing face;
+		public RayTraceResult hit;
 
-		public SelectedFace(TileEntity config, ForgeDirection face, MovingObjectPosition hit) {
+		public SelectedFace(TileEntity config, EnumFacing face, RayTraceResult hit) {
 			super();
 			this.config = config;
 			this.face = face;
@@ -532,7 +531,7 @@ public abstract class SideConfigDisplay {
 		}
 
 		@Override
-		public boolean isSideSolid(int x, int y, int z, ForgeDirection side, boolean _default) {
+		public boolean isSideSolid(int x, int y, int z, EnumFacing side, boolean _default) {
 			return false;
 		}
 

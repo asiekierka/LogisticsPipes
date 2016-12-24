@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.boards.RedstoneBoardRegistry;
@@ -45,7 +45,7 @@ import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.PipeRendererTESR;
 import buildcraft.transport.render.PipeTransportItemsRenderer;
 import buildcraft.transport.render.PipeTransportRenderer;
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import lombok.SneakyThrows;
 
 import logisticspipes.LogisticsPipes;
@@ -143,7 +143,7 @@ public class BuildCraftProxy implements IBCProxy {
 		}
 
 		try {
-			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", TileEntity.class, ForgeDirection.class);
+			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", TileEntity.class, EnumFacing.class);
 			canPipeConnect.setAccessible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -153,9 +153,9 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	public boolean checkForPipeConnection(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
+	public boolean checkForPipeConnection(TileEntity with, EnumFacing side, LogisticsTileGenericPipe pipe) {
 		if (with instanceof TileGenericPipe) {
-			if (ReflectionHelper.invokePrivateMethodCatched(Boolean.class, TileGenericPipe.class, with, "hasBlockingPluggable", new Class[] { ForgeDirection.class }, new Object[] { side.getOpposite() }).booleanValue()) {
+			if (ReflectionHelper.invokePrivateMethodCatched(Boolean.class, TileGenericPipe.class, with, "hasBlockingPluggable", new Class[] { EnumFacing.class }, new Object[] { side.getOpposite() }).booleanValue()) {
 				return false;
 			}
 			Pipe<?> otherPipe = ((TileGenericPipe) with).pipe;
@@ -178,7 +178,7 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	public IConnectionOverrideResult checkConnectionOverride(TileEntity with, ForgeDirection side, LogisticsTileGenericPipe pipe) {
+	public IConnectionOverrideResult checkConnectionOverride(TileEntity with, EnumFacing side, LogisticsTileGenericPipe pipe) {
 		if (with instanceof IPipeConnection) {
 			IPipeConnection.ConnectOverride override = ((IPipeConnection) with).overridePipeConnection(PipeType.ITEM, side.getOpposite());
 			if (override == IPipeConnection.ConnectOverride.DISCONNECT) {
@@ -238,7 +238,7 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	public boolean canPipeConnect(TileEntity pipe, TileEntity with, ForgeDirection side) {
+	public boolean canPipeConnect(TileEntity pipe, TileEntity with, EnumFacing side) {
 		if (canPipeConnect == null) {
 			initProxy();
 		}
@@ -299,7 +299,7 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	public void notifyOfChange(LogisticsTileGenericPipe pipe, TileEntity tile, ForgeDirection o) {
+	public void notifyOfChange(LogisticsTileGenericPipe pipe, TileEntity tile, EnumFacing o) {
 		if (tile instanceof ITileBufferHolder) {
 			((ITileBufferHolder) tile).blockCreated(o, BuildCraftTransport.genericPipeBlock, pipe);
 		}

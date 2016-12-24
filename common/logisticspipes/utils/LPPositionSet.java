@@ -3,7 +3,7 @@ package logisticspipes.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 
 import lombok.SneakyThrows;
 

@@ -15,7 +15,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import com.google.common.primitives.Ints;
 
@@ -32,7 +32,7 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	private final boolean _forExtraction;
 	private int[] _slotMapCache;
 
-	public SidedInventoryMinecraftAdapter(ISidedInventory sidedInventory, ForgeDirection side, boolean forExtraction) {
+	public SidedInventoryMinecraftAdapter(ISidedInventory sidedInventory, EnumFacing side, boolean forExtraction) {
 		_sidedInventory = sidedInventory;
 		_side = side.ordinal();
 		_forExtraction = forExtraction;
@@ -40,7 +40,7 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 
 	private int[] getSlotMap() {
 		if(_slotMapCache == null) {
-			if (_side == ForgeDirection.UNKNOWN.ordinal()) {
+			if (_side == EnumFacing.UNKNOWN.ordinal()) {
 				_slotMapCache = buildAllSidedMap();
 			} else {
 				ArrayList<Integer> list = new ArrayList<>();

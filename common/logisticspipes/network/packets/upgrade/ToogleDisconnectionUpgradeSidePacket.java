@@ -4,7 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +20,7 @@ public class ToogleDisconnectionUpgradeSidePacket extends SlotPacket {
 
 	@Getter
 	@Setter
-	private ForgeDirection side;
+	private EnumFacing side;
 
 	public ToogleDisconnectionUpgradeSidePacket(int id) {
 		super(id);
@@ -47,13 +47,13 @@ public class ToogleDisconnectionUpgradeSidePacket extends SlotPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
-		output.writeForgeDirection(side);
+		output.writeEnumFacing(side);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-		side = input.readForgeDirection();
+		side = input.readEnumFacing();
 	}
 
 	@Override

@@ -38,9 +38,13 @@
 package network.rs485.logisticspipes.world;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -73,6 +77,19 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates, LPSe
 		setZCoord(zCoord);
 	}
 
+	public DoubleCoordinates(Vec3d vector) {
+		setXCoord(vector.xCoord);
+		setYCoord(vector.yCoord);
+		setZCoord(vector.zCoord);
+	}
+
+	public DoubleCoordinates(Vec3i vector) {
+		setXCoord(vector.getX());
+		setYCoord(vector.getY());
+		setZCoord(vector.getZ());
+	}
+
+
 	public DoubleCoordinates(LPDataInput input) {
 		read(input);
 	}
@@ -82,7 +99,7 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates, LPSe
 	}
 
 	public DoubleCoordinates(TileEntity tile) {
-		this(tile.xCoord, tile.yCoord, tile.zCoord);
+		this(tile.getPos());
 	}
 
 	public DoubleCoordinates(CoreUnroutedPipe pipe) {
@@ -138,8 +155,13 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates, LPSe
 		return (int) getZCoord();
 	}
 
+	@Override
+	public BlockPos getBlockPos() {
+		return new BlockPos(getXCoord(), getYCoord(), getZCoord());
+	}
+
 	public TileEntity getTileEntity(IBlockAccess world) {
-		return world.getTileEntity(getXInt(), getYInt(), getZInt());
+		return world.getTileEntity(getBlockPos());
 	}
 
 	@Override
@@ -151,12 +173,12 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates, LPSe
 		return "(" + getXCoord() + ", " + getYCoord() + ", " + getZCoord() + ")";
 	}
 
-	public Block getBlock(IBlockAccess world) {
-		return world.getBlock(getXInt(), getYInt(), getZInt());
+	public IBlockState getBlockState(IBlockAccess world) {
+		return world.getBlockState(getBlockPos());
 	}
 
 	public boolean blockExists(World world) {
-		return world.blockExists(getXInt(), getYInt(), getZInt());
+		return world.isBlockLoaded(getBlockPos());
 	}
 
 	public double distanceTo(DoubleCoordinates targetPos) {
@@ -186,7 +208,7 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates, LPSe
 	}
 
 	public void setBlockToAir(World world) {
-		world.setBlockToAir(getXInt(), getYInt(), getZInt());
+		world.setBlockToAir(getBlockPos());
 	}
 
 	@Override

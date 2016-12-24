@@ -5,8 +5,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModuleAdvancedExtractorMK3 extends ModuleAdvancedExtractorMK2 {
 

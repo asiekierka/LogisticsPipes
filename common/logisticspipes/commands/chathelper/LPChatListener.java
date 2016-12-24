@@ -16,14 +16,14 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.ITextComponent;
 
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.ServerChatEvent;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class LPChatListener {
 
@@ -34,34 +34,34 @@ public class LPChatListener {
 
 	@SubscribeEvent
 	public void serverChat(ServerChatEvent event) {
-		EntityPlayerMP player = event.player;
-		if (LPChatListener.tasks.containsKey(event.username)) {
-			if (event.message.startsWith("/")) {
-				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "You need to answer the question, before you can use any other command"));
+		EntityPlayerMP player = event.getPlayer();
+		if (LPChatListener.tasks.containsKey(event.getUsername())) {
+			if (event.getMessage().startsWith("/")) {
+				player.addChatComponentMessage(new TextComponentString(ChatColor.RED + "You need to answer the question, before you can use any other command"));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 			} else {
-				if (!event.message.equalsIgnoreCase("true") && !event.message.equalsIgnoreCase("false") && !event.message.equalsIgnoreCase("on") && !event.message.equalsIgnoreCase("off") && !event.message.equalsIgnoreCase("0") && !event.message.equalsIgnoreCase("1") && !event.message.equalsIgnoreCase("no")
-						&& !event.message.equalsIgnoreCase("yes")) {
-					player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "Not a valid answer."));
-					player.addChatComponentMessage(new ChatComponentText(ChatColor.AQUA + "Please enter " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no " + ChatColor.RESET + "| " + ChatColor.GREEN + "true" + ChatColor.RESET + "/" + ChatColor.RED + "flase "
+				if (!event.getMessage().equalsIgnoreCase("true") && !event.getMessage().equalsIgnoreCase("false") && !event.getMessage().equalsIgnoreCase("on") && !event.getMessage().equalsIgnoreCase("off") && !event.getMessage().equalsIgnoreCase("0") && !event.getMessage().equalsIgnoreCase("1") && !event.getMessage().equalsIgnoreCase("no")
+						&& !event.getMessage().equalsIgnoreCase("yes")) {
+					player.addChatComponentMessage(new TextComponentString(ChatColor.RED + "Not a valid answer."));
+					player.addChatComponentMessage(new TextComponentString(ChatColor.AQUA + "Please enter " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no " + ChatColor.RESET + "| " + ChatColor.GREEN + "true" + ChatColor.RESET + "/" + ChatColor.RED + "flase "
 							+ ChatColor.RESET + "| " + ChatColor.GREEN + "on" + ChatColor.RESET + "/" + ChatColor.RED + "off " + ChatColor.RESET + "| " + ChatColor.GREEN + "1" + ChatColor.RESET + "/" + ChatColor.RED + "0" + ChatColor.RESET + ">"));
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 				} else {
-					boolean flag = event.message.equalsIgnoreCase("true") || event.message.equalsIgnoreCase("on") || event.message.equalsIgnoreCase("1") || event.message.equalsIgnoreCase("yes");
+					boolean flag = event.getMessage().equalsIgnoreCase("true") || event.getMessage().equalsIgnoreCase("on") || event.getMessage().equalsIgnoreCase("1") || event.getMessage().equalsIgnoreCase("yes");
 					if (!handleAnswer(flag, player)) {
-						player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "Error: Could not handle answer."));
+						player.addChatComponentMessage(new TextComponentString(ChatColor.RED + "Error: Could not handle answer."));
 					}
 				}
 			}
 			event.setCanceled(true);
-		} else if (LPChatListener.morePageDisplays.containsKey(event.username)) {
-			if (!LPChatListener.morePageDisplays.get(event.username).isTerminated()) {
-				if (event.message.startsWith("/")) {
-					player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "Exit " + ChatColor.AQUA + "PageView" + ChatColor.RED + " first!"));
+		} else if (LPChatListener.morePageDisplays.containsKey(event.getUsername())) {
+			if (!LPChatListener.morePageDisplays.get(event.getUsername()).isTerminated()) {
+				if (event.getMessage().startsWith("/")) {
+					player.addChatComponentMessage(new TextComponentString(ChatColor.RED + "Exit " + ChatColor.AQUA + "PageView" + ChatColor.RED + " first!"));
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 					event.setCanceled(true);
 				} else {
-					if (LPChatListener.morePageDisplays.get(event.username).handleChat(event.message, player)) {
+					if (LPChatListener.morePageDisplays.get(event.getUsername()).handleChat(event.getMessage(), player)) {
 						event.setCanceled(true);
 					}
 				}
@@ -71,7 +71,7 @@ public class LPChatListener {
 
 	@SubscribeEvent
 	public void clientChat(ClientChatReceivedEvent event) {
-		IChatComponent message = event.message;
+		ITextComponent message = event.getMessage();
 		if (message != null) {
 			String realMessage = null;
 			try {
@@ -149,13 +149,13 @@ public class LPChatListener {
 	}
 
 	public boolean handleAnswer(boolean flag, ICommandSender sender) {
-		if (!LPChatListener.tasks.containsKey(sender.getCommandSenderName())) {
+		if (!LPChatListener.tasks.containsKey(sender.getName())) {
 			return false;
 		}
 		if (flag) {
 			try {
 				Boolean result;
-				if ((result = LPChatListener.tasks.get(sender.getCommandSenderName()).call()) != null) {
+				if ((result = LPChatListener.tasks.get(sender.getName()).call()) != null) {
 					if (result != null && !result) {
 						return false;
 					}
@@ -165,9 +165,9 @@ public class LPChatListener {
 				return false;
 			}
 		} else {
-			sender.addChatMessage(new ChatComponentText(ChatColor.GREEN + "Answer handled."));
+			sender.addChatMessage(new TextComponentString(ChatColor.GREEN + "Answer handled."));
 		}
-		LPChatListener.tasks.remove(sender.getCommandSenderName());
+		LPChatListener.tasks.remove(sender.getName());
 		return true;
 	}
 
@@ -180,10 +180,10 @@ public class LPChatListener {
 	}
 
 	public static boolean addTask(Callable<Boolean> input, ICommandSender sender) {
-		if (LPChatListener.tasks.containsKey(sender.getCommandSenderName())) {
+		if (LPChatListener.tasks.containsKey(sender.getName())) {
 			return false;
 		} else {
-			LPChatListener.tasks.put(sender.getCommandSenderName(), input);
+			LPChatListener.tasks.put(sender.getName(), input);
 			return true;
 		}
 	}

@@ -12,10 +12,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -52,12 +52,12 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, EnumFacing side) {
 		return true;
 	}
 
 	public LogisticsSolidBlock() {
-		super(Material.iron);
+		super(Material.IRON);
 		setCreativeTab(LogisticsPipes.LPCreativeTab);
 		setHardness(6.0F);
 	}

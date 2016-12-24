@@ -13,7 +13,7 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class GuiRequestPopup extends SubGuiScreen {
 
@@ -86,7 +86,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 				break;
 			case 1:
 				for (String msg : text) {
-					player.addChatMessage(new ChatComponentText(msg));
+					player.addChatMessage(new TextComponentString(msg));
 				}
 				((GuiButton) buttonList.get(1)).enabled = false;
 				break;

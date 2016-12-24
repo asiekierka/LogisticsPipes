@@ -50,7 +50,8 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -59,11 +60,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
 
@@ -119,7 +121,7 @@ public class ItemModule extends LogisticsItem {
 
 		private int id;
 		private Class<? extends LogisticsModule> moduleClass;
-		private IIcon moduleIcon = null;
+		private TextureAtlasSprite moduleIcon = null;
 
 		private Module(int id, Class<? extends LogisticsModule> moduleClass) {
 			this.id = id;
@@ -146,18 +148,18 @@ public class ItemModule extends LogisticsItem {
 			return id;
 		}
 
-		private IIcon getIcon() {
+		private TextureAtlasSprite getIcon() {
 			return moduleIcon;
 		}
 
 		@SideOnly(Side.CLIENT)
-		private void registerModuleIcon(IIconRegister par1IIconRegister) {
+		private void registerModuleIcon(TextureMap map) {
 			if (moduleClass == null) {
-				moduleIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/blank");
+				moduleIcon = map.registerSprite(new ResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/blank"));
 			} else {
 				try {
 					LogisticsModule instance = moduleClass.newInstance();
-					moduleIcon = instance.getIconTexture(par1IIconRegister);
+					moduleIcon = map.registerSprite(instance.getIcon());
 				} catch (InstantiationException | IllegalAccessException e) {
 					e.printStackTrace();
 				}
@@ -231,7 +233,7 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabRedstone;
+		return CreativeTabs.REDSTONE;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -265,29 +267,30 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public ItemStack onItemRightClick(final ItemStack par1ItemStack, final World par2World, final EntityPlayer par3EntityPlayer) {
+	public ActionResult<ItemStack> onItemRightClick(final ItemStack par1ItemStack, final World par2World, final EntityPlayer par3EntityPlayer, final EnumHand hand) {
 		if (MainProxy.isServer(par3EntityPlayer.worldObj)) {
 			openConfigGui(par1ItemStack, par3EntityPlayer, par2World);
 		}
-		return super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
+		return super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer, hand);
 	}
 
 	@Override
-	public boolean onItemUse(final ItemStack par1ItemStack, final EntityPlayer par2EntityPlayer, final World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
-		if (MainProxy.isServer(par2EntityPlayer.worldObj)) {
-			TileEntity tile = par3World.getTileEntity(par4, par5, par6);
+	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if (MainProxy.isServer(playerIn.worldObj)) {
+			TileEntity tile = worldIn.getTileEntity(pos);
 			if (tile instanceof LogisticsTileGenericPipe) {
-				if (par2EntityPlayer.getDisplayName().equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
-					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(par3World, par4, par5, par6);
+				// TODO: ComputerCraft's gone
+				if (playerIn.getDisplayName().equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
+					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldIn, pos);
 					if (LogisticsBlockGenericPipe.isValid(pipe)) {
-						pipe.blockActivated(par2EntityPlayer);
+						pipe.blockActivated(playerIn);
 					}
 				}
-				return true;
+				return EnumActionResult.SUCCESS;
 			}
-			openConfigGui(par1ItemStack, par2EntityPlayer, par3World);
+			openConfigGui(stack, playerIn, worldIn);
 		}
-		return true;
+		return EnumActionResult.SUCCESS;
 	}
 
 	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IWorldProvider world, IPipeServiceProvider service) {
@@ -331,19 +334,19 @@ public class ItemModule extends LogisticsItem {
 		return null;
 	}
 
-	@Override
+	// TODO: Call manually
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IIconRegister) {
+	public void registerIcons(TextureMap map) {
 		if (modules.size() <= 0) {
 			return;
 		}
 		for (Module module : modules) {
-			module.registerModuleIcon(par1IIconRegister);
+			module.registerModuleIcon(map);
 		}
 	}
 
-	@Override
-	public IIcon getIconFromDamage(int i) {
+	// TODO: Replace
+	/* public IIcon getIconFromDamage(int i) {
 		// should set and store TextureIndex with this object.
 		for (Module module : modules) {
 			if (module.getId() == i) {
@@ -353,7 +356,7 @@ public class ItemModule extends LogisticsItem {
 			}
 		}
 		return null;
-	}
+	} */
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
@@ -364,11 +367,11 @@ public class ItemModule extends LogisticsItem {
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 					NBTTagList nbttaglist = nbt.getTagList("informationList", 8);
 					for (int i = 0; i < nbttaglist.tagCount(); i++) {
-						Object nbttag = nbttaglist.tagList.get(i);
-						String data = ((NBTTagString) nbttag).func_150285_a_();
+						Object nbttag = nbttaglist.get(i);
+						String data = ((NBTTagString) nbttag).getString();
 						if (data.equals("<inventory>") && i + 1 < nbttaglist.tagCount()) {
-							nbttag = nbttaglist.tagList.get(i + 1);
-							data = ((NBTTagString) nbttag).func_150285_a_();
+							nbttag = nbttaglist.get(i + 1);
+							data = ((NBTTagString) nbttag).getString();
 							if (data.startsWith("<that>")) {
 								String prefix = data.substring(6);
 								NBTTagCompound module = nbt.getCompoundTag("moduleInformation");

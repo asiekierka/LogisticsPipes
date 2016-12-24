@@ -3,7 +3,7 @@ package logisticspipes.textures;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import logisticspipes.LPConstants;
 import logisticspipes.proxy.MainProxy;

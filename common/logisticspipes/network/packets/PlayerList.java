@@ -2,7 +2,7 @@ package logisticspipes.network.packets;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import logisticspipes.interfaces.PlayerListReciver;
 import logisticspipes.network.abstractpackets.ModernPacket;

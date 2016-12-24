@@ -44,7 +44,7 @@ import java.util.EnumSet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import io.netty.buffer.ByteBuf;
 
@@ -110,7 +110,7 @@ public interface LPDataOutput {
 
 	void writeBooleanArray(boolean[] arr);
 
-	void writeForgeDirection(ForgeDirection direction);
+	void writeEnumFacing(EnumFacing direction);
 
 	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz);
 

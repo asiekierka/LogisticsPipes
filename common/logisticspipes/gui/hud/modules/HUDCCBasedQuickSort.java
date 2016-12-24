@@ -8,7 +8,7 @@ import logisticspipes.modules.ModuleCCBasedQuickSort;
 
 import net.minecraft.client.Minecraft;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class HUDCCBasedQuickSort implements IHUDModuleRenderer {
 

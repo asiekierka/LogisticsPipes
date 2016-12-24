@@ -2,7 +2,7 @@ package logisticspipes.network.packets.pipe;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +16,7 @@ public class ChassiOrientationPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private ForgeDirection dir;
+	private EnumFacing dir;
 
 	public ChassiOrientationPacket(int id) {
 		super(id);

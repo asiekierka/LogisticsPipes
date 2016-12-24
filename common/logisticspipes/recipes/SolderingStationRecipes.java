@@ -40,7 +40,7 @@ public class SolderingStationRecipes {
 				null },
 				new ItemStack(LogisticsPipes.LogisticsItemCard,2,0), stack-> {
 					stack.stackTagCompound = new NBTTagCompound();
-					stack.stackTagCompound.setString("UUID", UUID.randomUUID().toString());
+					stack.getTagCompound().setString("UUID", UUID.randomUUID().toString());
 				}));
 
 		SolderingStationRecipes.recipes.add(new SolderingStationRecipe(new ItemStack[] {
