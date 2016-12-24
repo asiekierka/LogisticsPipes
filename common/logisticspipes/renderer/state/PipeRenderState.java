@@ -11,7 +11,6 @@ import logisticspipes.interfaces.IClientState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.renderer.newpipe.GLRenderList;
-import logisticspipes.renderer.newpipe.RenderEntry;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 

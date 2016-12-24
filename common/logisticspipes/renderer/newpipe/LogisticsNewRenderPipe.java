@@ -1,46 +1,17 @@
 package logisticspipes.renderer.newpipe;
 
 import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.ITubeOrientation;
-import logisticspipes.proxy.object3d.operation.*;
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.config.PlayerConfig;
-import logisticspipes.pipefxhandlers.EntityModelFX;
-import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IBounds;
-import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.interfaces.IVec3;
-import logisticspipes.renderer.state.PipeRenderState;
-import logisticspipes.textures.Textures;
-import logisticspipes.utils.tuples.Quartet;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EffectRenderer;
-
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.lwjgl.opengl.GL11;
-
 public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
+
+	@Override
+	public void renderHighlight(ITubeOrientation orientation) {
+
+	}
 
 	enum Edge {
 		Upper_North(EnumFacing.UP, EnumFacing.NORTH),
@@ -258,7 +229,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			this.side = side;
 		}
 	}
-
+/*
 	static Map<EnumFacing, List<IModel3D>> sideNormal = new HashMap<>();
 	static Map<EnumFacing, List<IModel3D>> sideBC = new HashMap<>();
 	static Map<Edge, IModel3D> edges = new HashMap<>();
@@ -1120,4 +1091,5 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	public void renderHighlight(ITubeOrientation orientation) {
 		highlight.render(new I3DOperation[] { LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF) });
 	}
+	*/
 }

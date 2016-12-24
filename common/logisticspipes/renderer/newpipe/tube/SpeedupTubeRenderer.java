@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
@@ -13,18 +12,24 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.pipes.tubes.HSTubeSpeedup.SpeedupDirection;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.operation.*;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
-import logisticspipes.renderer.newpipe.RenderEntry;
 
+import logisticspipes.renderer.newpipe.RenderEntry;
 import net.minecraft.util.ResourceLocation;
 
 public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
+	@Override
+	public void renderHighlight(ITubeOrientation orientation) {
 
+	}
+
+	@Override
+	public void renderToList(CoreUnroutedPipe pipe, List<RenderEntry> objectsToRender) {
+
+	}
+/*
 	private SpeedupTubeRenderer() {}
 
 	public static final SpeedupTubeRenderer instance = new SpeedupTubeRenderer();
@@ -88,5 +93,6 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 		SpeedupTubeRenderer.tubeSpeedup.get(speedupDirection).copy().render(LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF));
 		LogisticsNewRenderPipe.renderBoxWithDir(((SpeedupDirection) orientation.getRenderOrientation()).getDir1());
 	}
+	*/
 }
 

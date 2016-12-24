@@ -8,18 +8,14 @@ import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 
-
-import net.minecraftforge.client.IItemRenderer;
-
 import org.lwjgl.opengl.GL11;
 
-public class LogisticsPipeItemRenderer implements IItemRenderer {
-
+public class LogisticsPipeItemRenderer {
+/*
 	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
 	private LogisticsNewPipeItemRenderer newRenderer;
 
@@ -131,7 +127,7 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 		}
 	}
 
-	/** IItemRenderer implementation **/
+	/** IItemRenderer implementation **
 
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -179,4 +175,5 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 			default:
 		}
 	}
+*/
 }

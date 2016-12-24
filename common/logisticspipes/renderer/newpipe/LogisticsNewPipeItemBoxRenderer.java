@@ -5,7 +5,6 @@ import java.util.Map;
 
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -20,7 +19,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
 public class LogisticsNewPipeItemBoxRenderer {
-
+/*
 	private static final int RENDER_SIZE = 40;
 
 	private int renderList = -1;
@@ -96,7 +95,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 		// CENTER HORIZONTAL
 
 		array[pos] = GLAllocation.generateDisplayLists(1);
-		GL11.glNewList(array[pos], 4864 /* GL_COMPILE */);
+		GL11.glNewList(array[pos], GL11.GL_COMPILE);
 
 		block.minX = 0.32;
 		block.maxX = 0.68;
@@ -112,4 +111,5 @@ public class LogisticsNewPipeItemBoxRenderer {
 		GL11.glEndList();
 		return array[pos];
 	}
+	*/
 }

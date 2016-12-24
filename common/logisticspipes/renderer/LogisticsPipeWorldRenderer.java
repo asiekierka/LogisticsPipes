@@ -14,17 +14,14 @@ import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 
 import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
-
-public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler {
-
+public class LogisticsPipeWorldRenderer {
+/*
 	public static int renderPass = -1;
 
 	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
@@ -168,7 +165,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 	/**
 	 * Render a block with normal and inverted vertex order so back face culling
 	 * doesn't have any effect.
-	 */
+	 *
 	private static void renderOneWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
 		assert mask != 0;
 
@@ -180,7 +177,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 	/**
 	 * Render a block with normal and inverted vertex order so back face culling
 	 * doesn't have any effect.
-	 */
+	 *
 	private static void renderTwoWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
 		assert mask != 0;
 
@@ -227,4 +224,5 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 	public boolean shouldRender3DInInventory(int modelId) {
 		return false;
 	}
+*/
 }

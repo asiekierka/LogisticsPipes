@@ -7,28 +7,21 @@ import java.util.stream.Collectors;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Corner;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe.Edge;
-import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.BlockRotation;
-import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.CoverSides;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraft.util.EnumFacing;
 
 import org.lwjgl.opengl.GL11;
 
-public class LogisticsNewPipeItemRenderer implements IItemRenderer {
-
+public class LogisticsNewPipeItemRenderer {
+/*
 	private final boolean renderAsBlock;
 
 	public LogisticsNewPipeItemRenderer(boolean flag) {
@@ -138,7 +131,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 
 	/**
 	 * IItemRenderer implementation
-	 **/
+	 **
 
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -195,4 +188,5 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 			default:
 		}
 	}
+*/
 }

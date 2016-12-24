@@ -5,35 +5,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 
 import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
-
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
-import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.operation.LPScale;
-import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
-import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.BlockRotation;
-import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.CoverSides;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandler {
-
+public class LogisticsNewPipeWorldRenderer {
+/*
 	private Map<BlockRotation, IModel3D> requestBlock = null;
 
 	@Override
@@ -133,4 +124,5 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 	public boolean shouldRender3DInInventory(int modelId) {
 		return false;
 	}
+*/
 }

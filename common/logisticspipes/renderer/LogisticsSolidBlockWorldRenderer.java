@@ -1,11 +1,8 @@
 package logisticspipes.renderer;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
-
-import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -14,8 +11,8 @@ import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer;
 
-public class LogisticsSolidBlockWorldRenderer implements ISimpleBlockRenderingHandler {
-
+public class LogisticsSolidBlockWorldRenderer {
+/*
 	public PlayerConfig config;
 	LogisticsNewSolidBlockWorldRenderer newRenderer = new LogisticsNewSolidBlockWorldRenderer();
 
@@ -87,4 +84,5 @@ public class LogisticsSolidBlockWorldRenderer implements ISimpleBlockRenderingHa
 	public int getRenderId() {
 		return LPConstants.solidBlockModel;
 	}
+	*/
 }

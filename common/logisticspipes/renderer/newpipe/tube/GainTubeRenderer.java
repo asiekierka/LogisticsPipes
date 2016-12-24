@@ -12,15 +12,6 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.tubes.HSTubeGain;
 import logisticspipes.pipes.tubes.HSTubeGain.TubeGainRenderOrientation;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IBounds;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.operation.LPColourMultiplier;
-import logisticspipes.proxy.object3d.operation.LPRotation;
-import logisticspipes.proxy.object3d.operation.LPScale;
-import logisticspipes.proxy.object3d.operation.LPTranslation;
-import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
-import logisticspipes.proxy.object3d.operation.LPUVTranslation;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
@@ -31,7 +22,16 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
 
 public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
+	@Override
+	public void renderHighlight(ITubeOrientation orientation) {
 
+	}
+
+	@Override
+	public void renderToList(CoreUnroutedPipe pipe, List<RenderEntry> objectsToRender) {
+
+	}
+/*
 	private GainTubeRenderer() {}
 
 	public static final GainTubeRenderer instance = new GainTubeRenderer();
@@ -106,4 +106,5 @@ public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlaceme
 		}
 		return null;
 	}
+	*/
 }

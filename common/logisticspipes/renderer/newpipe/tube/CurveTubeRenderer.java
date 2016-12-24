@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
@@ -13,14 +12,6 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.tubes.HSTubeCurve;
 import logisticspipes.pipes.tubes.HSTubeCurve.TurnDirection;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.operation.LPColourMultiplier;
-import logisticspipes.proxy.object3d.operation.LPRotation;
-import logisticspipes.proxy.object3d.operation.LPScale;
-import logisticspipes.proxy.object3d.operation.LPTranslation;
-import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
-import logisticspipes.proxy.object3d.operation.LPUVTranslation;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
@@ -30,7 +21,16 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.util.ResourceLocation;
 
 public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
+	@Override
+	public void renderHighlight(ITubeOrientation orientation) {
 
+	}
+
+	@Override
+	public void renderToList(CoreUnroutedPipe pipe, List<RenderEntry> objectsToRender) {
+
+	}
+/*
 	private CurveTubeRenderer() {}
 
 	public static final CurveTubeRenderer instance = new CurveTubeRenderer();
@@ -101,4 +101,5 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 	public void renderHighlight(ITubeOrientation orientation) {
 		CurveTubeRenderer.tubeCurve.get(orientation.getRenderOrientation()).copy().render(new I3DOperation[] { LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF)  });
 	}
+	*/
 }

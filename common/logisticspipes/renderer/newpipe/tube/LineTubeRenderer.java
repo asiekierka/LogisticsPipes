@@ -4,12 +4,8 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.tubes.HSTubeLine;
-import logisticspipes.pipes.tubes.HSTubeLine.TubeLineOrientation;
 import logisticspipes.pipes.tubes.HSTubeLine.TubeLineRenderOrientation;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.operation.*;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
@@ -23,7 +19,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class LineTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
+	@Override
+	public void renderHighlight(ITubeOrientation orientation) {
 
+	}
+
+	@Override
+	public void renderToList(CoreUnroutedPipe pipe, List<RenderEntry> objectsToRender) {
+
+	}
+/*
 	private LineTubeRenderer() {}
 
 	public static final LineTubeRenderer instance = new LineTubeRenderer();
@@ -80,5 +85,6 @@ public final class LineTubeRenderer implements ISpecialPipeRenderer, IHighlightP
 		TubeLineRenderOrientation direction = (TubeLineRenderOrientation) orientation.getRenderOrientation();
 		LineTubeRenderer.tubeLine.get(direction).copy().render(LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF));
 	}
+	*/
 }
 
