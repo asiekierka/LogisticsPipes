@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameType;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -34,7 +37,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSettings.GameType;
 
 import net.minecraft.util.EnumFacing;
 
@@ -100,7 +102,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	 * getTextureIndex(Orienations.Unknown) has logic. Then override this
 	 */
 	public int getIconIndexForItem() {
-		return getIconIndex(EnumFacing.UNKNOWN);
+		return getIconIndex(null);
 	}
 
 	/**
@@ -130,7 +132,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		if (MainProxy.isClient(getWorld())) {
 			if (oldRendererState != (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe)) {
 				oldRendererState = (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe);
-				getWorld().markBlockForUpdate(getX(), getY(), getZ());
+				// TODO: Verify correctness
+				getWorld().notifyBlockUpdate(getPos(), getState(), getState(), 0);
 			}
 		}
 	}
@@ -152,21 +155,15 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		initialized = true;
 	}
 
-	protected void notifyBlockOfNeighborChange(EnumFacing side) {
-		container.getWorld().notifyBlockOfNeighborChange(container.xCoord + side.offsetX, container.yCoord + side.offsetY, container.zCoord + side.offsetZ, LogisticsPipes.LogisticsPipeBlock);
-	}
-
 	public void updateNeighbors(boolean needSelf) {
 		if (needSelf) {
-			container.getWorld().notifyBlockOfNeighborChange(container.xCoord, container.yCoord, container.zCoord, LogisticsPipes.LogisticsPipeBlock);
+			container.getWorld().notifyBlockOfStateChange(getPos(), getState().getBlock());
 		}
-		for (EnumFacing side : EnumFacing.VALUES) {
-			notifyBlockOfNeighborChange(side);
-		}
+		container.getWorld().notifyNeighborsRespectDebug(getPos(), getState().getBlock());
 	}
 
 	public void dropItem(ItemStack stack) {
-		MainProxy.dropItems(container.getWorld(), stack, container.xCoord, container.yCoord, container.zCoord);
+		MainProxy.dropItems(container.getWorld(), stack, getPos());
 	}
 
 	public void onBlockRemoval() {
@@ -195,7 +192,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public EnumFacing getOpenOrientation() {
 		int connectionsNum = 0;
 
-		EnumFacing targetOrientation = EnumFacing.UNKNOWN;
+		EnumFacing targetOrientation = null;
 
 		for (EnumFacing o : EnumFacing.VALUES) {
 			if (container.isPipeConnected(o)) {
@@ -209,7 +206,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		}
 
 		if (connectionsNum > 1 || connectionsNum == 0) {
-			return EnumFacing.UNKNOWN;
+			return null;
 		}
 
 		return targetOrientation.getOpposite();
@@ -246,16 +243,24 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return false;
 	}
 
+	public final IBlockState getState() {
+		return container.getState();
+	}
+
+	public final BlockPos getPos() {
+		return container.getPos();
+	}
+
 	public final int getX() {
-		return container.xCoord;
+		return getPos().getX();
 	}
 
 	public final int getY() {
-		return container.yCoord;
+		return getPos().getY();
 	}
 
 	public final int getZ() {
-		return container.zCoord;
+		return getPos().getZ();
 	}
 
 	public boolean canBeDestroyed() {
@@ -424,7 +429,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
 		DoubleCoordinates pos = new DoubleCoordinates(0.5, 0.5, 0.5);
 		if (fPos < 0.5) {
-			if (travelItem.input == EnumFacing.UNKNOWN) {
+			if (travelItem.input == null) {
 				return null;
 			}
 			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.input.getOpposite())) {
@@ -432,7 +437,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 			CoordinateUtils.add(pos, travelItem.input.getOpposite(), 0.5 - fPos);
 		} else {
-			if (travelItem.output == EnumFacing.UNKNOWN) {
+			if (travelItem.output == null) {
 				return null;
 			}
 			if (!container.renderState.pipeConnectionMatrix.isConnected(travelItem.output)) {

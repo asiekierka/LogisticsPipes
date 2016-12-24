@@ -10,10 +10,12 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityDiggingFX;
 
+import net.minecraft.client.particle.ParticleDigging;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,6 +24,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import net.minecraft.util.math.RayTraceResult;
@@ -70,12 +73,13 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	private int renderMask = 0;
 
 	public LogisticsBlockGenericPipe() {
-		super(Material.glass);
+		super(Material.GLASS);
 		setRenderAllSides();
 		setCreativeTab(null);
 	}
 
-	public static IIcon getRequestTableTextureFromSide(int l) {
+	// TODO: Adapt to new rendering
+	/* public static IIcon getRequestTableTextureFromSide(int l) {
 		EnumFacing dir = EnumFacing.getOrientation(l);
 		switch (dir) {
 			case UP:
@@ -85,7 +89,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			default:
 				return Textures.LOGISTICS_REQUEST_TABLE[4];
 		}
-	}
+	} */
 
 	public static void removePipe(CoreUnroutedPipe pipe) {
 		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
@@ -126,17 +130,15 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return;
 		}
 
-		int x = pipe.container.xCoord;
-		int y = pipe.container.yCoord;
-		int z = pipe.container.zCoord;
+		BlockPos pos = pipe.container.getPos();
 
 		if (LogisticsBlockGenericPipe.lastRemovedDate != world.getTotalWorldTime()) {
 			LogisticsBlockGenericPipe.lastRemovedDate = world.getTotalWorldTime();
 			LogisticsBlockGenericPipe.pipeRemoved.clear();
 		}
 
-		LogisticsBlockGenericPipe.pipeRemoved.put(new DoubleCoordinates(x, y, z), pipe);
-		world.removeTileEntity(x, y, z);
+		LogisticsBlockGenericPipe.pipeRemoved.put(new DoubleCoordinates(pos), pipe);
+		world.removeTileEntity(pos);
 	}
 
 	/* Registration ******************************************************** */
@@ -176,19 +178,19 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return null;
 	}
 
-	public static boolean placePipe(CoreUnroutedPipe pipe, World world, int i, int j, int k, Block block, int meta) {
-		return LogisticsBlockGenericPipe.placePipe(pipe, world, i, j, k, block, meta, null);
+	public static boolean placePipe(CoreUnroutedPipe pipe, World world, BlockPos pos, IBlockState state) {
+		return LogisticsBlockGenericPipe.placePipe(pipe, world, pos, state, null);
 	}
 
-	public static boolean placePipe(CoreUnroutedPipe pipe, World world, int i, int j, int k, Block block, int meta, ITubeOrientation orientation) {
+	public static boolean placePipe(CoreUnroutedPipe pipe, World world, BlockPos pos, IBlockState state, ITubeOrientation orientation) {
 		if (world.isRemote) {
 			return true;
 		}
 
-		boolean placed = world.setBlock(i, j, k, block, meta, 2);
+		boolean placed = world.setBlockState(pos, state, 2);
 
 		if (placed) {
-			TileEntity tile = world.getTileEntity(i, j, k);
+			TileEntity tile = world.getTileEntity(pos);
 			if (tile instanceof LogisticsTileGenericPipe) {
 				LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) tile;
 				if (pipe instanceof CoreMultiBlockPipe) {
@@ -203,26 +205,26 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 					orientation.rotatePositions(positions);
 					for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : positions) {
 						pos.add(placeAt);
-						TileEntity subTile = world.getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+						TileEntity subTile = world.getTileEntity(pos.getBlockPos());
 						if(subTile instanceof LogisticsTileGenericSubMultiBlock) {
 							((LogisticsTileGenericSubMultiBlock) subTile).addMultiBlockMainPos(placeAt);
 							((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
 							MainProxy.sendPacketToAllWatchingChunk(subTile, ((LogisticsTileGenericSubMultiBlock) subTile).getLPDescriptionPacket());
 						} else {
-							world.setBlock(pos.getXInt(), pos.getYInt(), pos.getZInt(), LogisticsPipes.LogisticsSubMultiBlock, 0, 2);
-							subTile = world.getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+							world.setBlockState(pos.getBlockPos(), LogisticsPipes.LogisticsSubMultiBlock.getDefaultState(), 2);
+							subTile = world.getTileEntity(pos.getBlockPos());
 							if (subTile instanceof LogisticsTileGenericSubMultiBlock) {
 								((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
 							}
 						}
-						world.notifyBlockChange(pos.getXInt(), pos.getYInt(), pos.getZInt(), LogisticsPipes.LogisticsSubMultiBlock);
+						world.notifyBlockOfStateChange(pos.getBlockPos(), LogisticsPipes.LogisticsSubMultiBlock);
 					}
 					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = null;
 				}
 				tilePipe.initialize(pipe);
 				tilePipe.sendUpdateToClient();
 			}
-			world.notifyBlockChange(i, j, k, block);
+			world.notifyBlockOfStateChange(pos, state.getBlock());
 		}
 
 		return placed;
@@ -963,19 +965,19 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float xOffset, float yOffset, float zOffset) {
-		super.onBlockActivated(world, x, y, z, player, side, xOffset, yOffset, zOffset);
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack heldItem, EnumFacing side, float xOffset, float yOffset, float zOffset) {
+		super.onBlockActivated(world, pos, state, player, hand, heldItem, side, xOffset, yOffset, zOffset);
 
-		world.notifyBlocksOfNeighborChange(x, y, z, LogisticsPipes.LogisticsPipeBlock);
+		world.notifyNeighborsRespectDebug(pos, LogisticsPipes.LogisticsPipeBlock);
 
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
-			ItemStack currentItem = player.getCurrentEquippedItem();
+			ItemStack currentItem = heldItem;
 
 			if (currentItem == null) {
 				// Fall through the end of the test
-			} else if (currentItem.getItem() == Items.sign) {
+			} else if (currentItem.getItem() == Items.SIGN) {
 				// Sign will be placed anyway, so lets show the sign gui
 				return false;
 			} else if (currentItem.getItem() instanceof ItemLogisticsPipe) {
@@ -1001,10 +1003,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-	public void onEntityCollidedWithBlock(World world, int i, int j, int k, Entity entity) {
-		super.onEntityCollidedWithBlock(world, i, j, k, entity);
+	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
+		super.onEntityCollidedWithBlock(world, pos, state, entity);
 
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, i, j, k);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			pipe.onEntityCollidedWithBlock(entity);
@@ -1012,8 +1014,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, x, y, z);
+	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			return pipe.bcPipePart.canConnectRedstone();
@@ -1034,7 +1036,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-	public boolean canProvidePower() {
+	public boolean canProvidePower(IBlockState state) {
 		return true;
 	}
 
@@ -1191,7 +1193,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 								double py = localy + (j + 0.5D) / its;
 								double pz = localz + (k + 0.5D) / its;
 								int random = rand.nextInt(6);
-								EntityDiggingFX fx = new EntityDiggingFX(worldObj, px, py, pz, px - localx - 0.5D, py - localy - 0.5D, pz - localz - 0.5D, LogisticsPipes.LogisticsPipeBlock, random, meta);
+								EntityDiggingFX fx = new ParticleDigging(worldObj, px, py, pz, px - localx - 0.5D, py - localy - 0.5D, pz - localz - 0.5D, LogisticsPipes.LogisticsPipeBlock, random, meta);
 								fx.setParticleIcon(icon);
 								effectRenderer.addEffect(fx.applyColourMultiplier(x, y, z));
 							}

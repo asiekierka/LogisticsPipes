@@ -17,7 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
@@ -865,13 +865,13 @@ public class DummyContainer extends Container {
 				itemstack1 = itemstack == null ? null : itemstack.copy();
 				inventoryItemStacks.set(i, itemstack1);
 
-				for (Object crafter : crafters) {
+				for (Object crafter : listeners) {
 					boolean revert = false;
 					if (overrideMCAntiSend && crafter instanceof EntityPlayerMP && ((EntityPlayerMP) crafter).isChangingQuantityOnly) {
 						((EntityPlayerMP) crafter).isChangingQuantityOnly = false;
 						revert = true;
 					}
-					((ICrafting) crafter).sendSlotContents(this, i, itemstack1);
+					((IContainerListener) crafter).sendSlotContents(this, i, itemstack1);
 					if (revert) {
 						((EntityPlayerMP) crafter).isChangingQuantityOnly = true;
 					}

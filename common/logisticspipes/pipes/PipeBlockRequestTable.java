@@ -96,7 +96,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public void ignoreDisableUpdateEntity() {
 		super.ignoreDisableUpdateEntity();
 		if (tick++ == 5) {
-			getWorld().func_147479_m(getX(), getY(), getZ());
+			getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
 		}
 		if (MainProxy.isClient(getWorld())) {
 			if (!init) {
@@ -177,8 +177,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
 		if (diskInv.getStackInSlot(0) == null) {
-			if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
-				diskInv.setInventorySlotContents(0, entityplayer.getCurrentEquippedItem());
+			if (entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
+				diskInv.setInventorySlotContents(0, entityplayer.inventory.getCurrentItem());
 				entityplayer.inventory.setInventorySlotContents(entityplayer.inventory.currentItem, null);
 				flag = false;
 			}
@@ -203,7 +203,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		return Textures.empty_2;
 	}
 
-	public IIcon getTextureFor(int l) {
+	// TODO: Adapt to new rendering
+	/* public IIcon getTextureFor(int l) {
 		EnumFacing dir = EnumFacing.getFront(l);
 		if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
 			switch (dir) {
@@ -239,7 +240,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 					}
 			}
 		}
-	}
+	} */
 
 	@Override
 	public void onAllowedRemoval() {

@@ -8,6 +8,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
@@ -252,6 +253,10 @@ public class MainProxy {
 		MainProxy.globalTick++;
 	}
 
+	public static EntityItem dropItems(World worldObj, ItemStack stack, BlockPos pos) {
+		return dropItems(worldObj, stack, pos.getX(), pos.getY(), pos.getZ());
+	}
+
 	public static EntityItem dropItems(World worldObj, ItemStack stack, int xCoord, int yCoord, int zCoord) {
 		EntityItem item = new EntityItem(worldObj, xCoord, yCoord, zCoord, stack);
 		worldObj.spawnEntityInWorld(item);
@@ -289,6 +294,6 @@ public class MainProxy {
 	}
 
 	public static boolean isPipeControllerEquipped(EntityPlayer entityplayer) {
-		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsPipeControllerItem;
+		return entityplayer != null && entityplayer.inventory.getCurrentItem() != null && entityplayer.inventory.getCurrentItem().getItem() == LogisticsPipes.LogisticsPipeControllerItem;
 	}
 }

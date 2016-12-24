@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.enderio.core.common.network.NetworkUtil;
 import net.minecraft.entity.player.EntityPlayer;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
@@ -92,7 +94,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	}
 
 	private static FMLProxyPacket toFMLPacket(ModernPacket msg, String channel) throws Exception {
-		ByteBuf buffer = Unpooled.buffer();
+		PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
 		buffer.writeShort(msg.getId());
 		buffer.writeInt(msg.getDebugId());
 
