@@ -99,14 +99,14 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void onPlayerInteract(final PlayerInteractEvent.LeftClickBlock event) {
 		if (MainProxy.isServer(event.getEntityPlayer().worldObj)) {
-			final TileEntity tile = event.getEntityPlayer().worldObj.getTileEntity(event.x, event.y, event.z);
+			final TileEntity tile = event.getEntityPlayer().worldObj.getTileEntity(event.getPos());
 			if (tile instanceof LogisticsTileGenericPipe) {
 				if (((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
 					if (!((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).canBeDestroyedByPlayer(event.getEntityPlayer())) {
 						event.setCanceled(true);
 						event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 						((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
-						event.getEntityPlayer().worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
+						event.getEntityPlayer().worldObj.notifyBlockUpdate(tile.getPos(), tile.getBlockType().getDefaultState(), tile.getBlockType().getDefaultState(), 0);
 						((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).delayTo = System.currentTimeMillis() + 200;
 						((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).repeatFor = 10;
 					} else {
@@ -120,7 +120,7 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void onPlayerInteract(final PlayerInteractEvent.RightClickBlock event) {
 		if (MainProxy.isServer(event.getEntityPlayer().worldObj)) {
-			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().worldObj, event.x, event.y, event.z);
+			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().worldObj, event.getPos());
 			TileEntity tileEntity = worldCoordinates.getTileEntity();
 			if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
 				//@formatter:off

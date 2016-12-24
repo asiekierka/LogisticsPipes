@@ -30,7 +30,9 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
@@ -54,13 +56,17 @@ public class WorldCoordinatesWrapper {
 		setCoords(coords);
 	}
 
+	public WorldCoordinatesWrapper(World world, BlockPos pos) {
+		this(world, new IntegerCoordinates(pos));
+	}
+
 	public WorldCoordinatesWrapper(World world, int xCoord, int yCoord, int zCoord) {
 		setWorld(world);
 		setCoords(new IntegerCoordinates(xCoord, yCoord, zCoord));
 	}
 
 	public WorldCoordinatesWrapper(TileEntity tileEntity) {
-		this(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
+		this(tileEntity.getWorld(), tileEntity.getPos());
 	}
 
 	public void setWorld(World world) {
@@ -98,16 +104,16 @@ public class WorldCoordinatesWrapper {
 	}
 
 	public TileEntity getTileEntity() {
-		return world.getTileEntity(coords.getXCoord(), coords.getYCoord(), coords.getZCoord());
+		return world.getTileEntity(coords.getBlockPos());
 	}
 
-	public Block getBlock() {
-		return world.getBlock(coords.getXCoord(), coords.getYCoord(), coords.getZCoord());
+	public IBlockState getBlockState() {
+		return world.getBlockState(coords.getBlockPos());
 	}
 
 	public AdjacentTileEntity getAdjacentFromDirection(EnumFacing direction) {
 		IntegerCoordinates newCoords = CoordinateUtils.add(new IntegerCoordinates(coords), direction);
-		return new AdjacentTileEntity(world.getTileEntity(newCoords.getXCoord(), newCoords.getYCoord(), newCoords.getZCoord()), direction);
+		return new AdjacentTileEntity(world.getTileEntity(coords.getBlockPos()), direction);
 	}
 
 	@AllArgsConstructor
