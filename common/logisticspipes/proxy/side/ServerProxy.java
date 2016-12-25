@@ -23,6 +23,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -34,7 +35,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 
@@ -196,9 +196,7 @@ public class ServerProxy implements IProxy {
 	 * Retrieves pipe at specified coordinates if any.
 	 * 
 	 * @param world
-	 * @param x
-	 * @param y
-	 * @param z
+	 * @param pos
 	 * @return
 	 */
 	protected static LogisticsTileGenericPipe getPipe(World world, BlockPos pos) {
@@ -219,7 +217,7 @@ public class ServerProxy implements IProxy {
 
 	// BuildCraft method end
 	@Override
-	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag) {
+	public void addLogisticsPipesOverride(TextureMap par1IIconRegister, int index, String override1, String override2, boolean flag) {
 		// TODO Auto-generated method stub
 
 	}
@@ -257,11 +255,6 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public LogisticsModule getModuleFromGui() {
-		return null;
-	}
-
-	@Override
-	public IItemRenderer getPipeItemRenderer() {
 		return null;
 	}
 

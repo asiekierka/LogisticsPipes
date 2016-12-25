@@ -8,6 +8,7 @@
 
 package logisticspipes.utils.gui;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -23,12 +24,8 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
-import codechicken.nei.VisiblityData;
-import codechicken.nei.api.INEIGuiHandler;
-import codechicken.nei.api.TaggedInventoryArea;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -47,8 +44,7 @@ import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
 import logisticspipes.utils.string.StringUtils;
 
-@ModDependentInterface(modId = { "NotEnoughItems" }, interfacePath = { "codechicken.nei.api.INEIGuiHandler" })
-public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler {
+public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler {
 
 	protected static final ResourceLocation ITEMSINK = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
 	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
@@ -231,12 +227,12 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	protected void func_146977_a(Slot slot) {
+	protected void drawSlot(Slot slot) {
 		if (extentionControllerLeft.renderSlot(slot) && extentionControllerRight.renderSlot(slot)) {
 			if(subGui == null) {
 				onRenderSlot(slot);
 			}
-			super.func_146977_a(slot);
+			super.drawSlot(slot);
 		}
 	}
 
@@ -340,7 +336,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	public final void handleMouseInput() {
+	public final void handleMouseInput() throws IOException {
 		if (subGui != null) {
 			subGui.handleMouseInput();
 		} else {
@@ -348,12 +344,12 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		}
 	}
 
-	public void handleMouseInputSub() {
+	public void handleMouseInputSub() throws IOException {
 		super.handleMouseInput();
 	}
 
 	@Override
-	public final void handleKeyboardInput() {
+	public final void handleKeyboardInput() throws IOException {
 		if (subGui != null) {
 			subGui.handleKeyboardInput();
 		} else {
@@ -393,7 +389,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3) {
+	protected void mouseClicked(int par1, int par2, int par3) throws IOException {
 		for (IRenderSlot slot : slots) {
 			int mouseX = par1 - guiLeft;
 			int mouseY = par2 - guiTop;
@@ -437,7 +433,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				GuiButton guibutton = (GuiButton) aButtonList;
 				if (guibutton.mousePressed(mc, par1, par2)) {
 					selectedButton = guibutton;
-					guibutton.func_146113_a(mc.getSoundHandler());
+					guibutton.playPressSound(mc.getSoundHandler());
 					actionPerformed(guibutton);
 					handledButton = true;
 					break;
@@ -456,14 +452,15 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	protected void mouseMovedOrUp(int par1, int par2, int par3) {
+	protected void mouseReleased(int par1, int par2, int par3) {
 		if (selectedButton != null && par3 == 0) {
 			selectedButton.mouseReleased(par1, par2);
 			selectedButton = null;
 		} else if (isMouseInFuzzyPanel(par1 - guiLeft, par2 - guiTop)) {
+
 		} else {
-				super.mouseMovedOrUp(par1, par2, par3);
-			}
+			super.mouseReleased(par1, par2, par3);
+		}
 	}
 
 	private boolean mouseCanPressButton(int par1, int par2) {
@@ -520,7 +517,11 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	public void closeGui() {
-		keyTyped(' ', 1);
+		try {
+			keyTyped(' ', 1);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Minecraft getMC() {
@@ -530,57 +531,5 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	@Override
 	public LogisticsBaseGuiScreen getBaseScreen() {
 		return this;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "NotEnoughItems")
-	public List<TaggedInventoryArea> getInventoryAreas(GuiContainer gui) {
-		return null;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "NotEnoughItems")
-	public Iterable<Integer> getItemSpawnSlots(GuiContainer gui, ItemStack stack) {
-		return null;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "NotEnoughItems")
-	public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack stack, int button) {
-		if (gui instanceof LogisticsBaseGuiScreen && gui.inventorySlots instanceof DummyContainer && stack != null) {
-			Slot result = null;
-			int pos = -1;
-			for (int k = 0; k < inventorySlots.inventorySlots.size(); ++k) {
-				Slot slot = (Slot) inventorySlots.inventorySlots.get(k);
-				if (isMouseOverSlot(slot, mouseX, mouseY)) {
-					result = slot;
-					pos = k;
-					break;
-				}
-			}
-			if (result != null) {
-				if (result instanceof DummySlot || result instanceof ColorSlot || result instanceof FluidSlot) {
-					((DummyContainer) gui.inventorySlots).handleDummyClick(result, pos, stack, button, 0, mc.thePlayer);
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(DummyContainerSlotClick.class).setSlotId(pos).setStack(stack).setButton(button));
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "NotEnoughItems")
-	public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
-		if (gui instanceof LogisticsBaseGuiScreen) {
-			return ((LogisticsBaseGuiScreen) gui).extentionControllerRight.isOverPanel(x, y, w, h);
-		}
-		return false;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "NotEnoughItems")
-	public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility) {
-		return null;
 	}
 }

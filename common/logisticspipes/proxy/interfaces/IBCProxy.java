@@ -3,6 +3,7 @@ package logisticspipes.proxy.interfaces;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
@@ -52,11 +53,11 @@ public interface IBCProxy {
 
 	IBCTilePart getBCTilePart(LogisticsTileGenericPipe logisticsTileGenericPipe);
 
-	IBCClickResult handleBCClickOnPipe(World world, int x, int y, int z, EntityPlayer player, int side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe);
+	IBCClickResult handleBCClickOnPipe(World world, BlockPos pos, EntityPlayer player, EnumFacing side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe);
 
-	void callBCNeighborBlockChange(World world, int x, int y, int z, Block block);
+	void callBCNeighborBlockChange(World world, BlockPos pos, Block block);
 
-	void callBCRemovePipe(World world, int x, int y, int z);
+	void callBCRemovePipe(World world, BlockPos pos);
 
 	void logWarning(String format);
 

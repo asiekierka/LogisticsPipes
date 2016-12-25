@@ -3,6 +3,7 @@ package logisticspipes.renderer.state;
 import java.util.List;
 
 
+import logisticspipes.renderer.newpipe.RenderEntry;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

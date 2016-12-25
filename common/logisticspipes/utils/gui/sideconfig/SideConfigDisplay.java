@@ -16,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -25,13 +24,12 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -63,8 +61,6 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 //Based on: https://github.com/SleepyTrousers/EnderIO/blob/master/src/main/java/crazypants/enderio/machine/gui/GuiOverlayIoConfig.java
 public abstract class SideConfigDisplay {
 
-	protected static final RenderBlocks RB = new RenderBlocks();
-
 	private boolean draggingRotate = false;
 	private boolean draggingMove = false;
 	private float pitch = 0;
@@ -74,6 +70,7 @@ public abstract class SideConfigDisplay {
 
 	private Minecraft mc = Minecraft.getMinecraft();
 	private World world = mc.thePlayer.worldObj;
+	private IBlockAccess access;
 
 	private final Vector3d origin = new Vector3d();
 	private final Vector3d eye = new Vector3d();
@@ -145,7 +142,7 @@ public abstract class SideConfigDisplay {
 		}
 
 		world = mc.thePlayer.worldObj;
-		RB.blockAccess = new InnerBA();
+		access = new InnerBA();
 	}
 
 	public abstract void handleSelection(SelectedFace selection);
@@ -296,17 +293,18 @@ public abstract class SideConfigDisplay {
 			float f1 = 0.002F;
 			IBlockState state = mc.theWorld.getBlockState(selection.hit.getBlockPos());
 
-			if (state.getMaterial() != Material.air)
+			if (state.getMaterial() != Material.AIR)
 			{
-				if(block instanceof LogisticsBlockGenericPipe) {
+				if(state.getBlock() instanceof LogisticsBlockGenericPipe) {
 					LogisticsBlockGenericPipe.bypassPlayerTrace = cachedLPBlockTrace;
 				}
-				block.setBlockBoundsBasedOnState(mc.theWorld, selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ);
+				// TODO: 1.10
+				// state.getBlock().setBlockBoundsBasedOnState(mc.theWorld, selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ);
 				double d0 = origin.x - eye.x;
 				double d1 = origin.y - eye.y;
 				double d2 = origin.z - eye.z;
-				RenderGlobal.drawOutlinedBoundingBox(block.getSelectedBoundingBoxFromPool(mc.theWorld, selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ).expand((double)f1, (double)f1, (double)f1).getOffsetBoundingBox(-d0, -d1, -d2), -1);
-				if(block instanceof LogisticsBlockGenericPipe) {
+				RenderGlobal.drawSelectionBoundingBox(state.getSelectedBoundingBox(mc.theWorld, selection.hit.getBlockPos()).expand((double)f1, (double)f1, (double)f1).offset(-d0, -d1, -d2), 1, 1, 1, 1);
+				if(state.getBlock() instanceof LogisticsBlockGenericPipe) {
 					LogisticsBlockGenericPipe.bypassPlayerTrace = null;
 				}
 			}
@@ -531,18 +529,18 @@ public abstract class SideConfigDisplay {
 		}
 
 		@Override
-		public boolean isSideSolid(int x, int y, int z, EnumFacing side, boolean _default) {
+		public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
 			return false;
 		}
 
 		@Override
 		@SideOnly(Side.CLIENT)
-		public int getLightBrightnessForSkyBlocks(int var1, int var2, int var3, int var4) {
+		public int getLightBrightnessForSkyBlocks(BlockPos pos, int var4) {
 			return 15 << 20 | 15 << 4;
 		}
 
 		@Override
-		public int isBlockProvidingPowerTo(int var1, int var2, int var3, int var4) {
+		public int isBlockProvidingPowerTo(BlockPos pos, int var4) {
 			return wrapped.isBlockProvidingPowerTo(var1, var2, var3, var4);
 		}
 
@@ -580,13 +578,6 @@ public abstract class SideConfigDisplay {
 				return Blocks.air;
 			}
 			return wrapped.getBlock(var1, var2, var3);
-		}
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public BiomeGenBase getBiomeGenForCoords(int var1, int var2) {
-
-			return wrapped.getBiomeGenForCoords(var1, var2);
 		}
 
 		@Override

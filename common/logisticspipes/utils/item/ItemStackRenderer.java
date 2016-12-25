@@ -22,7 +22,6 @@ import net.minecraft.block.BlockPane;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -44,7 +43,6 @@ import org.lwjgl.opengl.GL11;
 public class ItemStackRenderer {
 
 	private RenderManager renderManager;
-	private RenderBlocks renderBlocks;
 	private RenderItem renderItem;
 	private TextureManager texManager;
 	private FontRenderer fontRenderer;
@@ -81,7 +79,6 @@ public class ItemStackRenderer {
 		if (texManager == null) {
 			texManager = Minecraft.getMinecraft().getTextureManager();
 		}
-		renderBlocks = RenderBlocks.getInstance();
 		renderItem = Minecraft.getMinecraft().getRenderItem();
 		scaleX = 1.0F;
 		scaleY = 1.0F;
@@ -145,7 +142,6 @@ public class ItemStackRenderer {
 	public void renderInGui() {
 		assert itemstack != null;
 		assert displayAmount != null;
-		assert renderBlocks != null;
 		assert renderItem != null;
 		assert texManager != null;
 		assert fontRenderer != null;
@@ -170,11 +166,11 @@ public class ItemStackRenderer {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
 
-		if (!ForgeHooksClient.renderInventoryItem(renderBlocks, texManager, itemstack, renderInColor, zLevel, posX, posY)) {
+		/* if (!ForgeHooksClient.renderInventoryItem(renderBlocks, texManager, itemstack, renderInColor, zLevel, posX, posY)) {
 			renderItem.zLevel += zLevel;
 			renderItem.renderItemIntoGUI(fontRenderer, texManager, itemstack, posX, posY, renderEffects);
 			renderItem.zLevel -= zLevel;
-		}
+		} */
 
 		// disable lightning
 		RenderHelper.disableStandardItemLighting();
@@ -236,7 +232,7 @@ public class ItemStackRenderer {
 			}
 		}
 
-		boolean changeColor = renderItem.renderWithColor != renderInColor;
+		/* boolean changeColor = renderItem.renderWithColor != renderInColor;
 		if (changeColor) {
 			renderItem.renderWithColor = renderInColor;
 		}
@@ -255,7 +251,7 @@ public class ItemStackRenderer {
 
 		if (changeColor) {
 			renderItem.renderWithColor = !renderInColor;
-		}
+		} */
 	}
 
 	public enum DisplayAmount {

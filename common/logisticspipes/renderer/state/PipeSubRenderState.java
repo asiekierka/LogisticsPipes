@@ -1,6 +1,7 @@
 package logisticspipes.renderer.state;
 
 import logisticspipes.renderer.newpipe.GLRenderList;
+import logisticspipes.renderer.newpipe.RenderEntry;
 
 import java.util.List;
 

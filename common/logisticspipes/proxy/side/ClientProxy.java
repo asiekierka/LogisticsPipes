@@ -51,16 +51,18 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.DimensionManager;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -70,8 +72,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ClientProxy implements IProxy {
-
-	private IItemRenderer pipeRenderer;
 
 	@Override
 	public String getSide() {
@@ -95,15 +95,8 @@ public class ClientProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsStatisticsTileEntity.class, "logisticspipes.blocks.stats.LogisticsStatisticsTileEntity");
 		GameRegistry.registerTileEntity(LogisticsTileGenericSubMultiBlock.class, "logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock");
 
-		LPConstants.pipeModel = RenderingRegistry.getNextAvailableRenderId();
-		LPConstants.solidBlockModel = RenderingRegistry.getNextAvailableRenderId();
-
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
-
-		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
-
-		RenderingRegistry.registerBlockHandler(new LogisticsSolidBlockWorldRenderer());
 
 		SimpleServiceLocator.buildCraftProxy.resetItemRotation();
 
@@ -150,18 +143,12 @@ public class ClientProxy implements IProxy {
 
 	@Override
 	public int getDimensionForWorld(World world) {
-		if (world instanceof WorldServer) {
-			return ((WorldServer) world).provider.dimensionId;
-		}
-		if (world instanceof WorldClient) {
-			return ((WorldClient) world).provider.dimensionId;
-		}
-		return world.getWorldInfo().getVanillaDimension();
+		return world.provider.getDimension();
 	}
 
 	@Override
-	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
-		return ClientProxy.getPipe(DimensionManager.getWorld(dimension), x, y, z);
+	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, BlockPos pos, EntityPlayer player) {
+		return ClientProxy.getPipe(DimensionManager.getWorld(dimension), pos);
 	}
 
 	// BuildCraft method
@@ -169,17 +156,15 @@ public class ClientProxy implements IProxy {
 	 * Retrieves pipe at specified coordinates if any.
 	 * 
 	 * @param world
-	 * @param x
-	 * @param y
-	 * @param z
+	 * @param pos
 	 * @return
 	 */
-	private static LogisticsTileGenericPipe getPipe(World world, int x, int y, int z) {
-		if (world == null || !world.blockExists(x, y, z)) {
+	private static LogisticsTileGenericPipe getPipe(World world, BlockPos pos) {
+		if (world == null || !world.isBlockLoaded(pos)) {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(x, y, z);
+		final TileEntity tile = world.getTileEntity(pos);
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
@@ -190,14 +175,14 @@ public class ClientProxy implements IProxy {
 	// BuildCraft method end
 
 	@Override
-	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag) {
+	public void addLogisticsPipesOverride(TextureMap par1IIconRegister, int index, String override1, String override2, boolean flag) {
 		if (par1IIconRegister != null) {
 			if ("NewPipeTexture".equals(override2) && !override1.contains("status_overlay")) {
-				Textures.LPnewPipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:" + override1.replace("pipes/", "pipes/new_texture/")));
+				// Textures.LPnewPipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:" + override1.replace("pipes/", "pipes/new_texture/")));
 			} else if (flag) {
-				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:" + override1));
+				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:" + override1)));
 			} else {
-				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:" + override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", "")));
+				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:" + override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", ""))));
 			}
 		}
 	}
@@ -241,14 +226,6 @@ public class ClientProxy implements IProxy {
 			return ((GuiCraftingPipe) FMLClientHandler.instance().getClient().currentScreen).get_pipe();
 		}
 		return null;
-	}
-
-	@Override
-	public IItemRenderer getPipeItemRenderer() {
-		if (pipeRenderer == null) {
-			pipeRenderer = new LogisticsPipeItemRenderer(false);
-		}
-		return pipeRenderer;
 	}
 
 	@Override

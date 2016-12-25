@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReportCategory;
@@ -743,6 +744,13 @@ public class LogisticsTileGenericPipe extends TileEntity
 			renderState.clean();
 		}
 		tilePart.afterStateUpdated();
+	}
+
+	public IBCPipePluggable getBCPipePluggable(EnumFacing direction) {
+		if (tilePart.getBCPipePluggable(direction) == null) {
+			return null;
+		}
+		return tilePart.getBCPipePluggable(direction);
 	}
 
 	public void sendUpdateToClient() {

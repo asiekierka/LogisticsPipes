@@ -107,7 +107,7 @@ public class LPPositionSet<T extends DoubleCoordinates> extends HashSet<T> imple
 	}
 
 	public AxisAlignedBB toABB() {
-		return AxisAlignedBB.getBoundingBox(getMinXD(), getMinYD(), getMinZD(), getMaxXD(), getMaxYD(), getMaxZD());
+		return new AxisAlignedBB(getMinXD(), getMinYD(), getMinZD(), getMaxXD(), getMaxYD(), getMaxZD());
 	}
 
 	@Override
